@@ -1,0 +1,42 @@
+{
+  "observed_at": 1789589922.860922,
+  "start_time": 1789589776.244819,
+  "elapsed_seconds": 146.61610317230225,
+  "observed_enabled_seconds": 5.540422201156616,
+  "workers": [
+    {
+      "worker": 0,
+      "device": "mps",
+      "new_batches": 0,
+      "audio_seconds": 0,
+      "latest_batch_at": null,
+      "speech_seconds_per_total_elapsed_second": 0.0,
+      "speech_seconds_per_enabled_second": 0.0
+    },
+    {
+      "worker": 1,
+      "device": "mps",
+      "new_batches": 0,
+      "audio_seconds": 0,
+      "latest_batch_at": null,
+      "speech_seconds_per_total_elapsed_second": 0.0,
+      "speech_seconds_per_enabled_second": 0.0
+    },
+    {
+      "worker": 2,
+      "device": "cpu",
+      "new_batches": 0,
+      "audio_seconds": 0,
+      "latest_batch_at": null,
+      "speech_seconds_per_total_elapsed_second": 0.0,
+      "speech_seconds_per_enabled_second": 0.0
+    }
+  ],
+  "peak_recorded_c": 86.594,
+  "limitations": [
+    "Different source passages and two GPU workers versus one CPU worker.",
+    "Elapsed time includes startup and cooling; enabled time is derived from supervisor transitions.",
+    "GPU commands already submitted can finish during a host-process pause.",
+    "These measurements do not establish a compute or memory-bandwidth bottleneck."
+  ]
+}

@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+projects/
+models/
+*.epub
+*.m4b
+*.m4a
+*.wav
+*.flac
+*.mp3
+vendor/smctemp/*.o
+vendor/smctemp/smctemp
+vendor/smctemp/read_sensors
+vendor/smctemp/*.dSYM/
+.DS_Store

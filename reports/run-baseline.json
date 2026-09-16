@@ -1,0 +1,1444 @@
+{
+  "project": "/Users/ojasviyadav/Work/Audiobooks/Emotional Design",
+  "voice": "af_heart",
+  "speed": 0.95,
+  "started_tracking_at": 1789589796.430965,
+  "topology": [
+    "mps",
+    "mps",
+    "cpu"
+  ],
+  "cpu_threads": 4,
+  "gpu_host_threads": 2,
+  "source_guard_pid": 1924,
+  "existing_receipts": {
+    "kokoro-heart-build/05-fm2/0001.json": {
+      "signature": "bfc4536762ddcafc89131493470efb603f5b23d58a9149d7045092c49ecfc99d",
+      "frames": 1204200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0009.json": {
+      "signature": "b4fca4f4e5fac3dce904f12136ad79d88a0dbe30c916025c955e4c0c527d82dd",
+      "frames": 1932000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0013.json": {
+      "signature": "e97114c7d829933ca23ac999c5befbd6b6adf9434fd6d43d6477a0dcab4afe3b",
+      "frames": 2118600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0005.json": {
+      "signature": "dca44e230e7de356799bb7c662273a99b0e4e21693cda871dc52d37d9acc439a",
+      "frames": 1958400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0004.json": {
+      "signature": "43d56337a49dcecf2a8df9fe2bb65e7dce640e4d69fb30e3615b8d87430c55e8",
+      "frames": 2343000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0012.json": {
+      "signature": "29edaede3094d993cff3f7ed38817ffb24a0378cf77ecf17f46a34376f974c44",
+      "frames": 2118000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0008.json": {
+      "signature": "c1acedf4cf49485902087de06f88c0638e2671674fe9214ef8661a337ac989ab",
+      "frames": 2530800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0015.json": {
+      "signature": "769b1399d99ca0a3b7dc063deb5204949db3c6bbd147f1b994d675e37ff3ddfa",
+      "frames": 2019600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0003.json": {
+      "signature": "03843e4eed64f3bf0232ab334fe2287d678f248a340476a237dee3c67dc1a93e",
+      "frames": 2288400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0019.json": {
+      "signature": "d2004e0f7258e1279628f36288e900ef9487832329f76e4528c5d0d7a6055a15",
+      "frames": 1558200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0018.json": {
+      "signature": "f5feb2111da44553edb143d6259ab4a2e3d93b97411f70dd97d73409cbd43496",
+      "frames": 1743000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0002.json": {
+      "signature": "8434c832a6489c3481ba773f0a776f12c75f7ef5d2b8517c5533ce50be8e631d",
+      "frames": 2713800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0014.json": {
+      "signature": "67d09a725bba2e524eb5d94381d0828c0200c4886fbcbb7e96ccb15c076358f8",
+      "frames": 2481600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0001.json": {
+      "signature": "04744659fd07b83bc890f6daa919e39805e023e75d7e3d99607bffda46a40c57",
+      "frames": 2415000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0017.json": {
+      "signature": "1262fd2683af25be6cfc545499e8e4c0b88b00a0fe5a9766a39daf4046f7068f",
+      "frames": 2253000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0016.json": {
+      "signature": "d09ad9095d42d81439cc3fa1fe23fd4b1b05a8e14a8768e684a477b1b44d5988",
+      "frames": 2017800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0007.json": {
+      "signature": "9b581dec80cd163414f2c61da47c7dfb0bcf6e2ff9a179507ae0946afeb1e245",
+      "frames": 920400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0011.json": {
+      "signature": "9a28c463bbbccf25aa314f0a7a99d7b9453490faf326fc65d9f27db5f64b49e8",
+      "frames": 2363400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0010.json": {
+      "signature": "3afb2c1a4e1e6b765fde189ea36993e12322a39337553e1266ce03c9df858bb8",
+      "frames": 2069400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/16-elg/0006.json": {
+      "signature": "93ac31e0b949828d8d29880fb303edc4c8a4025fcc3a1bbc547d6c5ce2bcff06",
+      "frames": 2480400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0009.json": {
+      "signature": "6b9c1bb899b25939d183764bf95f12e525c74fe5d43ee136abd6020ecbe671d9",
+      "frames": 2179800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0013.json": {
+      "signature": "36d011f17ae26b2187983df96d0553be50e815e608ed7df1814506b45786441c",
+      "frames": 2326200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0005.json": {
+      "signature": "79da2f1b93ba3a398fde584642f750df4044f85f6eb08c24dd47bede8f81cf03",
+      "frames": 2104200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0004.json": {
+      "signature": "2ba65ca6d9817a2ae2de9b7e554648e25dcb8c58beb5942f7a3aaefb7c0538a8",
+      "frames": 2467800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0012.json": {
+      "signature": "5e001919573af8f87635624c77a6e3f54c077f085183054688ca8734cad3b20f",
+      "frames": 2398800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0008.json": {
+      "signature": "fb269920755bca458d792d7dffe132d06cd18151601a82d7bd188b947e732037",
+      "frames": 1759800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0003.json": {
+      "signature": "137cf0d7f1f9e1b267ab064e5270b58814561b5cc693098dd9a8f70c9b97d4b4",
+      "frames": 2565000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0002.json": {
+      "signature": "e8f0537d54077f46d959539af9987395739d87bc602508a5cf5c6babcfea91e5",
+      "frames": 2061600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0014.json": {
+      "signature": "e0d17ed0cc17a91b7e86ef29d7dec703dcdcc3ad161aac1acec3fc6417322696",
+      "frames": 1883400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0001.json": {
+      "signature": "a03be3df77f2de5d1fed26bb87a0e8789b417953267155a821dc6cd5d912167c",
+      "frames": 2423400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0007.json": {
+      "signature": "85789b661d46839cfed096a25ff06044c212aa12e60015c514768f54640598f9",
+      "frames": 2015400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0011.json": {
+      "signature": "8e02036e841675e9aa913a701d9634354847e5660ca6ad4446603f57461ce711",
+      "frames": 2440200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0010.json": {
+      "signature": "f01b8556177f13a9c3ff9e5697749f71ebe2ba020c8d8791147998929838c28c",
+      "frames": 1795200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/06-fm3/0006.json": {
+      "signature": "d17d3f37cc7a7b04c0d94aee47c4ca8cabbca58e832ce99893b5a37e409a341c",
+      "frames": 2634600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/03-als/0001.json": {
+      "signature": "803ddc4156f254793d4354131c8fba02fe67b6713bce06438affab9df3548072",
+      "frames": 1222200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/07-p01/0001.json": {
+      "signature": "d0f7b45d62079096f3a292655070bef7c17685332608e4f8823611aa443454b2",
+      "frames": 88200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/19-ref/0004.json": {
+      "signature": "c8cae042777d3821c718a82d7f75a8637631c1900b8ee9f64cceae3a1025eec8",
+      "frames": 3492600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/19-ref/0003.json": {
+      "signature": "14ac6f12ed9aca47659762962cbdaf801f400977c5f04a5080c65cb628dbdf67",
+      "frames": 3838200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/19-ref/0002.json": {
+      "signature": "e3cdf10153945a64da966fe59079f37f5a30a9eea55c5830841219cc36bca519",
+      "frames": 3780600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/19-ref/0001.json": {
+      "signature": "a5940644a1327de3d24ed12b28c03be8b0eb6bd53f84b2c438f78fa8cea5ff6c",
+      "frames": 3828600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0009.json": {
+      "signature": "2ed7d0faf8f5900e4ea61a4be833ac5e0c0cefdec90f81e5ba25252417d3ec30",
+      "frames": 2421600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0013.json": {
+      "signature": "3cbed44b9eba0f1aae2015a68fea839067818cd6b6bdea5aaa005c9e6a063f35",
+      "frames": 2488800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0005.json": {
+      "signature": "c6f5209fc01391e04b6648d6c44bf82fe08af5ca07f6c5b3a7cc5d9e0f34b2b9",
+      "frames": 2540400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0004.json": {
+      "signature": "7b8c9e8d89907aec651ec8d546bf83a192c5ea99c91fcfc559e153e928031696",
+      "frames": 594000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0012.json": {
+      "signature": "22250736c940e3df74d52c483933c55cfe509f621e96d703c6309c20ae3dd709",
+      "frames": 2415600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0008.json": {
+      "signature": "a28238e8e8dc0564d149462f81dd0a1cae18c477d94a67e130303e2ec5131fc8",
+      "frames": 2418000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0015.json": {
+      "signature": "638308b27770e205c2b86e29fed0dab67bf4efb224bad74ad8f9a8ba7221e8ff",
+      "frames": 2231400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0003.json": {
+      "signature": "c760ed0d28b59fe63499b8c7642feb473514e073cc076ff636f8e2bfaccdfeef",
+      "frames": 2407800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0019.json": {
+      "signature": "60ac62595ba95e2af092984c5fafda62ffedcf7c44ea566490e39597dc36b3f9",
+      "frames": 1315200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0023.json": {
+      "signature": "47ba925e9b97056b8318aa2680a81d2ada75971add232ef55454587cfce8008b",
+      "frames": 1471800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0022.json": {
+      "signature": "64f111a0be030918ccc976557ffd07430996cdf1ed4a282eadd0489202e3db90",
+      "frames": 2499000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0018.json": {
+      "signature": "9e8652aafa95bf7a65451c4f7aedc98d7d1e23b3b4b33a345224f87b487379a5",
+      "frames": 3144000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0002.json": {
+      "signature": "27b5639cdfff7da38069012b7a7efe75104b8862c944e098ee216c9a18b293b3",
+      "frames": 1514400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0014.json": {
+      "signature": "652320e6383c50ecca107cf1abfa6c6b3b7787be40b65ab52b4a460b569e2492",
+      "frames": 2304600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0001.json": {
+      "signature": "dbbe2b1030cdf471993dd72af6eb815317ca7f04d7c5e0b5db05ed99985433ea",
+      "frames": 2752200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0017.json": {
+      "signature": "cac2d5ecc354fb117ae51d9871cd7df4668a5ff85df4247fcdf15a99a04c0e44",
+      "frames": 2599800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0021.json": {
+      "signature": "77d79ceb5f139acfa7bca43cb82dedd63a475aee17d28de5333b27f6c068d3b3",
+      "frames": 2695200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0020.json": {
+      "signature": "2a80d4d85025effa4ffbb727c4f444edfa3678c053411c6d152cb52fd84ffad2",
+      "frames": 2575200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0016.json": {
+      "signature": "bb15f519fd1c7f6c02acd7c86a1ba4267573042e067d13ab9db24fc0d604b9f8",
+      "frames": 1221600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0007.json": {
+      "signature": "e01430a62596d3632e3e697d61071d80369f43e5f62f4f173ed4dce4cc80195c",
+      "frames": 2094600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0011.json": {
+      "signature": "593a2dcfaeada781d9590fdc15d2aa335a6f8a208fd055d828344f2a769ceb3e",
+      "frames": 1212000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0010.json": {
+      "signature": "c44f015de40c50b74975c19561f95da52802abb1c206bce8c0165cf1f7779f9e",
+      "frames": 2664600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/08-c01/0006.json": {
+      "signature": "cc820e2fda3024a6d13e794a39b89361979269697ff286e758ca707a0f65365d",
+      "frames": 1731600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0009.json": {
+      "signature": "527fd786900e6ff508dd7fc46634ada4f8096b4791a16fbdb57b6574239181c2",
+      "frames": 2514000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0013.json": {
+      "signature": "4b78d827b9a180e193f9318efedd912099df113117f725660f12bc4432b699ca",
+      "frames": 1773000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0005.json": {
+      "signature": "e5f6976efe13fb0394de12de828207bb18115a9dcd7b82f9f0665f847ddefbc1",
+      "frames": 2347200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0004.json": {
+      "signature": "9228ae8046b7d7a2fca2602a17a8c33bc827746f6f9a38896f8de269c42f6ce5",
+      "frames": 2127600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0012.json": {
+      "signature": "7c3999a584fe49690b359bfc84878c55876ee95483aa0f3485f246e4bc2b7fe8",
+      "frames": 2495400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0008.json": {
+      "signature": "7552e1421d9ab2532f7b50257533aa723bb3441a5f7a1b5bfce89b331de34a93",
+      "frames": 2721000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0015.json": {
+      "signature": "b8e436b95e6886af96e776c65d6cde8e6e335241fd12886ffd5d401cb22c772c",
+      "frames": 2416800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0003.json": {
+      "signature": "b889ba61d5f66ac26e5cfb00b3b5e4f79487aba2bffe8d423b8c1e2553a86a2c",
+      "frames": 2022000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0019.json": {
+      "signature": "3def1bfccd82e1cf82f122557057414462b024caa1c3b35785b8a7a8720de9c3",
+      "frames": 2560800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0022.json": {
+      "signature": "50103b0ddb7a339056a07525ddf86824600bf6fc66df20bc8713a815d312694a",
+      "frames": 1752600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0018.json": {
+      "signature": "d8c9cba6c5d4caf70a3abfbcf4959d86a84b47e6b8c1f060c382df1d7c5109ce",
+      "frames": 2230200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0002.json": {
+      "signature": "b5590b0f1011a60336053fd029cd5c786db9859841ce5d92f64ca56392360650",
+      "frames": 1350600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0014.json": {
+      "signature": "e7e489ede556664fbcae89711800d058d1438bd4d8b5652f6d332343d16bc671",
+      "frames": 2437200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0001.json": {
+      "signature": "f94f7de3a6bc60c7f25742b697e1daddda90a952a57649ab218c4f4ce33ce8fe",
+      "frames": 2677200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0017.json": {
+      "signature": "f917ce2ad4a6e8b26a8cf1122bb27d4e0a4985955646155e662010a9a5513a1e",
+      "frames": 2616000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0021.json": {
+      "signature": "06eec9e8682f38491e54a2b7e35cef40b0bf82fd70258520aa08e6aed0a3fa6c",
+      "frames": 2221200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0020.json": {
+      "signature": "10bd3ffd8d365b5d07adab640a57d0280fa8045b0a929889d145393ab4517d91",
+      "frames": 2099400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0016.json": {
+      "signature": "adf4ba1f99b1f489eddb691a881cbe0bdef34863d0e5eaf5ae03997fb1763726",
+      "frames": 2467800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0007.json": {
+      "signature": "641674e584b22fc8f98dc24671858bd3bdf32d1e1d06e4b657682fb6ac22424a",
+      "frames": 2438400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0011.json": {
+      "signature": "b78959cc40030cab9edc1754d1d05512694cd59e1b2d17363480f0d0cc9b42f5",
+      "frames": 2655600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0010.json": {
+      "signature": "c306eea6c8482e794ce7f558f66568926d6b453cdb4ddb6924fb5561e9faef01",
+      "frames": 2754000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/12-c04/0006.json": {
+      "signature": "c88f781df7326d37aecf5004e4d18921d6825ddd60ee3b7670a7748ac45d98b5",
+      "frames": 2735400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/04-ded/0001.json": {
+      "signature": "d23eed15f7322fb7104a6132d3983eca1d194c7f25be753b2b9c4c9e81e6aa2f",
+      "frames": 42600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0009.json": {
+      "signature": "b35d19d444ba2ac3828b506c3b3eba4a0e20cf159cab9003f577d278d9fa85ce",
+      "frames": 2662200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0025.json": {
+      "signature": "20f3abd2a1f2c59630ad85bbc7c844ee5e783db01c50847aae8a6b5e75ca0b7c",
+      "frames": 2089800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0033.json": {
+      "signature": "524a0dfccfb3628a145249a8f212d7ff816ae982ccedcb112ca9b2f5ce0d76ad",
+      "frames": 2074800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0013.json": {
+      "signature": "d89d3d4fca30920daa4c771d330c2e2fcc80208cb83927bebac49574640768f6",
+      "frames": 2521200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0005.json": {
+      "signature": "324e92086337dc8f62f2a1818478688bc39991ab863e05a28f59cccbf4733630",
+      "frames": 1979400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0029.json": {
+      "signature": "b8ac02a37552c649027954dfb74f33ffc7c0043adeb80046d947cd0f1377c036",
+      "frames": 2029800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0028.json": {
+      "signature": "fe21d6e08504f8a5dab96bb4fcd6fb5e546c2e1862a0f03f469da4e91364cd43",
+      "frames": 1966200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0004.json": {
+      "signature": "897fd99bba842b403e81c472f678eee697702ffe139c7f6faadf6983e8668861",
+      "frames": 1270200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0012.json": {
+      "signature": "efbd0a1f88f4c9108de8bb5cb2108101e68bb6dd2a195422868b2fe87def40ca",
+      "frames": 1686000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0032.json": {
+      "signature": "f03d4091e98e3263bcfa25d098fecc78aedcdd773b15e09545fce37496350d4d",
+      "frames": 1303800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0024.json": {
+      "signature": "664e9b48620c243b47ec0242ad4aff83f98ca578b3660a84be44e59c62e821af",
+      "frames": 2431200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0008.json": {
+      "signature": "8a3addbb3806b46cb682628100303358d6b9c8cad55a2e17be50e255edbb11f2",
+      "frames": 2662800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0015.json": {
+      "signature": "4d8c5933b3ede44366729fd9b25ce24e94d51d9555539455bb779dbee4a88a38",
+      "frames": 2595000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0003.json": {
+      "signature": "145881c8b77d3914ccc20cd32785aaf3235a14f259b50a17be2986f11068c9d9",
+      "frames": 2497800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0019.json": {
+      "signature": "fe076ffa3fb928cbd41b0c61ecce9779580a7f14f57b760b47c24749b838cfdc",
+      "frames": 2530200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0023.json": {
+      "signature": "048502ca7744a78d4dd99ee870eac255000df808cafdfe64168948989a2d997c",
+      "frames": 1545000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0035.json": {
+      "signature": "a12cfc65c572d133fb397ca7b8a4b112a86edf7f4d5701169ccd7a729e4c8315",
+      "frames": 2489400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0034.json": {
+      "signature": "e215851d869c896e075e706787ed8389024e4cb41ea8c37fd90cd61a89152fe1",
+      "frames": 2064600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0022.json": {
+      "signature": "95750216916182bbf0c572531818b745ffd9c968afaed97266f1313217cdc5bf",
+      "frames": 1809000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0018.json": {
+      "signature": "78e63c4c2506ffe8c29c8e5393e2cbe57a31c7ab076a9a01f7419736972b0b83",
+      "frames": 2478000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0002.json": {
+      "signature": "a3037ee19bcadd890c7ca5b9db91178f88e0938415d7bf86c4d3e52ca1166519",
+      "frames": 2725200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0014.json": {
+      "signature": "9f9304a43affdacc7b398c7da586d36596a6acf84e88f3bb86a6f0e40f092c92",
+      "frames": 1869000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0001.json": {
+      "signature": "1c3d4761e9b3328403fac2add5451401d8b0628e8831819344789cd9e3cc1e5c",
+      "frames": 2160600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0017.json": {
+      "signature": "5d789adadfecb979a6eea95406ebcd7c13f83613a46ae73dfc71d82c24bc95dd",
+      "frames": 2677200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0021.json": {
+      "signature": "16134404d63762db829741211b76ee3becaf4ddce62e51ce2514909de8b39de8",
+      "frames": 2039400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0020.json": {
+      "signature": "5e7cd92d6f34b91dc886ebfdef136a681c468820b37ead684f83b9ec572df3ac",
+      "frames": 2602200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0016.json": {
+      "signature": "eb9c6a3baf021c9bb1bea0d9f5cb8afdada0f1673e962167a260083c463a87a4",
+      "frames": 2569800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0031.json": {
+      "signature": "778e1079d200da995861ad2cb3ee97e60fcc1833956420c057b89a94413aaede",
+      "frames": 2248200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0027.json": {
+      "signature": "a50bc38c04f86917b156dad3fc5cbe1a322fa09befbe789e0ea4a2b07388c050",
+      "frames": 1928400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0007.json": {
+      "signature": "93817302c9d1970cbcaa627559ae7747afa44fb3522d10517384b5642494af30",
+      "frames": 1566600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0011.json": {
+      "signature": "32f7668d36059b548be9fef5b7a30803acee62695754dccac9c8f55c883b1d65",
+      "frames": 2179800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0010.json": {
+      "signature": "3ad16b29e5820c1b164ca8cedde417c67bf9072026ad0c6bd4aeacc6331f5ba6",
+      "frames": 2563200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0006.json": {
+      "signature": "854c0dfcd0694400f3ae087845884bd0e858c6a5de507e2b575a3ed7305b378e",
+      "frames": 2055000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0026.json": {
+      "signature": "6496cb8e7cd66fbea1c01ec33395d4e1b8411e9f0b3f40f697e12b8d9bf5a05a",
+      "frames": 2561400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/13-c05/0030.json": {
+      "signature": "8bebe2a6a2252429343f67461520ea12858f15a58e5e82089ad4b4df206711e1",
+      "frames": 1957800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0009.json": {
+      "signature": "0847fd7905544b75447cf72faf56e02a45554b5e059a2fc02c4324fc57384541",
+      "frames": 2185200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0025.json": {
+      "signature": "9cec9e4a1e2d4358a6c2e1b0519308bf9ce26ecec8c97001f5d0fb7b3b56f7b5",
+      "frames": 1255800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0033.json": {
+      "signature": "5762e8fae9cabc90afd443d358624c274524f89e4a2ef68841f0a63f2eae0a77",
+      "frames": 1681200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0044.json": {
+      "signature": "4ae4f22cbdd5747ab4a7d468f9b6c2f2bfc46c626fcbf34958685b8eda98851f",
+      "frames": 2386800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0013.json": {
+      "signature": "cc769364caeb0cda6d8c26a72e9d60f0cbbe055719b5754fb5cd407af37014ab",
+      "frames": 1312800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0005.json": {
+      "signature": "6f31a923400593048b7374947700ffa0030b4ef0c31bff1bec2cc13899c38181",
+      "frames": 2226600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0029.json": {
+      "signature": "6267bf8607e6af11cd1147cd5a2f437686b278595c9443d94f7f5ee0610033c6",
+      "frames": 1783800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0028.json": {
+      "signature": "28a8345200104af6c5e67dce3a0e319276a12ab59b79c00a69e0690fda16526a",
+      "frames": 2636400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0004.json": {
+      "signature": "4f9ba392f4c80c6da4e1d18d9938bf541e4e42bb18ad336ecae86949d9091814",
+      "frames": 2202600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0012.json": {
+      "signature": "c7d15bf147311bc1aaa307ec3598dbd5ca3eb196748c15574133929ef3c16e2a",
+      "frames": 1370400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0045.json": {
+      "signature": "8ceaaca039b2232f7d040a5ec77acc3dd1fcdf931b14aa32bc7391be22c782cc",
+      "frames": 1795800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0032.json": {
+      "signature": "b0e960b5d33a008210cb53fe51ec32f56d552249ff9c9fdf6282e76786828e85",
+      "frames": 2459400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0024.json": {
+      "signature": "11807def40e8a67d9c3f9d5522a3607cfd76c5eb3383dd12e8c5ec5002d4d0c8",
+      "frames": 2582400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0008.json": {
+      "signature": "e26fa9879d04c9dde48b830ebd4026363972c9bfb02fc3eabb1e594a9c4f0afc",
+      "frames": 1961400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0042.json": {
+      "signature": "5419ab1f17583cd1e21cadd5b0643b0c67046e82f826dbdd2805f686c066a5ec",
+      "frames": 2548800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0015.json": {
+      "signature": "cc45ed93f8673c025f2daa9d7830c32db9b4d9cf0cdaf0757afb15e98315acae",
+      "frames": 1131000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0003.json": {
+      "signature": "27ac569b20ae5c1644b0b94a8c17e6a0e094061b55f9626e84fa4ad18cdf3f3a",
+      "frames": 2086200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0039.json": {
+      "signature": "596f57a46f6f987547d5bbb06b5f6b4ad5d91c49f7de9415c25b8cbecb8ce16c",
+      "frames": 1952400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0019.json": {
+      "signature": "9af720790079d4f19b54ff42841c2cd7032719be576da4e8a01796880e66ea42",
+      "frames": 2061000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0023.json": {
+      "signature": "05f37943ee6edadf6938de93fbc2780a0c8a0c8aab47963b3d9b8a17bb1f5067",
+      "frames": 2298000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0035.json": {
+      "signature": "fce5de5f21c81fa6d5ce701d053f0a8bcdaff24be7c9d632008d1063f3674f63",
+      "frames": 2183400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0034.json": {
+      "signature": "10bd8a9d1feeaace8e8e0061a3f63ff7672f3484608ea35d348e06f1a553ea84",
+      "frames": 2066400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0022.json": {
+      "signature": "7bd3404d2e1f607e1303eb2f4b3aa0a62ea85c5503271dec2d7b3d9fac6d5cec",
+      "frames": 2267400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0018.json": {
+      "signature": "1b11e371980773e413ded74712eeb37bf7f4ad97dde8d240e240d2c406a6903d",
+      "frames": 1721400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0038.json": {
+      "signature": "8b5a06824273cf07bc0e3b6f5d8ed44999b12a4594af59e418e5a08057ee7609",
+      "frames": 2521800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0002.json": {
+      "signature": "4a351337c90c835ee02c5aedd4cca90a02acdd67f693d7906731cb18d63cb3d2",
+      "frames": 2214000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0014.json": {
+      "signature": "3594b5103aa4bdd0dbdc857d1de5c202244c2bd9c8c08bcb6ddff0399633ab2e",
+      "frames": 1790400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0043.json": {
+      "signature": "96f456acd147733dffc9c81fb9d23881466806d227b302e0371c6fd3cb53d9c4",
+      "frames": 2489400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0001.json": {
+      "signature": "9cdbdbaeb67cddd0f189dc454fed40da8c4b4b2a3b9fc5fb83c48b78b7c9604a",
+      "frames": 2061600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0017.json": {
+      "signature": "f1d0071d6dc8d2164ea7eb66d6a44f9569d73da7d065cc5532c9b058ba3cadf3",
+      "frames": 1142400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0040.json": {
+      "signature": "4410b27d1485f92b29aacec566ab1d4ee29ded7b85a6e6820ee187ea486c8c09",
+      "frames": 2639400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0037.json": {
+      "signature": "45210cd82e1802333809836167c17ab15f43068a06c6d7d394452543c1db3f8d",
+      "frames": 2415600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0021.json": {
+      "signature": "9087c7cf81854730c9f953bbf4c8b54aafffa91ad78d07357e8ea4bdd6da1fd0",
+      "frames": 1982400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0020.json": {
+      "signature": "c4702d55520df02ae842394945b5c89e575939727314d48537cba9c8f325a1c9",
+      "frames": 1509000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0036.json": {
+      "signature": "29799efd26ebd5ae2a2c6c0336c94efeb31ac882fe2f4601d687eb249d884e47",
+      "frames": 1795200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0041.json": {
+      "signature": "a47cda0523ea1ab621a6a55e572b21ba0087ceb6ab451f14692aad9885275d77",
+      "frames": 1835400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0016.json": {
+      "signature": "e14c3ee0ec639b013d0ef09eab16131ee3140aa8ed03c28964aaa151866cacb5",
+      "frames": 2257800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0031.json": {
+      "signature": "7b262972b681041fa266ddbe26053472a49398828cc92a653bee191b5b29d234",
+      "frames": 2213400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0027.json": {
+      "signature": "bb6989c7ad6f00a7d32266b1c350cf65393e04dc14b45fbbc24952d997cefb50",
+      "frames": 1808400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0007.json": {
+      "signature": "1ab4e696431500403f3dc2502e7213c40812ccacb529dfa4d2e1a558075df890",
+      "frames": 2437200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0011.json": {
+      "signature": "2aebdc7ad222a87cabea2bc7388df16a7b64726e7ba5b3f342e7cdc3c034c8cb",
+      "frames": 2622000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0010.json": {
+      "signature": "40e5f55a1cc3dc189ed9474df638bd4ad734fb60ce696e588784d88ac68a5049",
+      "frames": 1496400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0006.json": {
+      "signature": "a625f22a4368b274faaf685e374a80cd900a62a46c58c4d889a80a0eecd80ba7",
+      "frames": 2183400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0026.json": {
+      "signature": "e94bff0bd9fad2a2439a8ef11d614aa2817981114ca54e8b72639d4431191b51",
+      "frames": 2476200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/11-c03/0030.json": {
+      "signature": "cd9f2e84ea848701e36cdfbc228f0999c41872a75042aac3d8561879d8843e76",
+      "frames": 1344600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/02-fm1/0001.json": {
+      "signature": "3d1365a2373f62a260972ece91b817eb229a325e3d2ec17b59d5752a7312015a",
+      "frames": 2293800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/10-p02/0001.json": {
+      "signature": "9b8ce5959122bdacb7fc4636be883cfe94032323a2cce43e6b569695a048ee04",
+      "frames": 1042800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0009.json": {
+      "signature": "a5607970a1fe5593c4e3172fc67857361092fe4292d43b1dc6f64f9bfce6ba17",
+      "frames": 2650200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0025.json": {
+      "signature": "cec96922a074d2e8b991d4e4225d32eec3d171decffdb332f4fbab0ca103bc9a",
+      "frames": 2492400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0033.json": {
+      "signature": "89641f0e349280a1682aa2f972454126872f386869f342f2f1197df528213aa6",
+      "frames": 1853400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0013.json": {
+      "signature": "480eb760d1addfb80b25f842d8bfdf8bce1b801564508370ae6111ccb40b3c1d",
+      "frames": 2046600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0005.json": {
+      "signature": "82039a2eb3c6b624ae5c1c746d6e63af049a50af7b67c50e6fabae59fed37498",
+      "frames": 1848000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0029.json": {
+      "signature": "9955c85ae9774d02a2ab73e30815caeb65c2efb58337759320d8fc2b972272cb",
+      "frames": 2160600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0028.json": {
+      "signature": "4cb70e1cf5ff96ea5e6606f2dc1d19a9616994eb8f5b776afc5bf4a3f586e60c",
+      "frames": 2244000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0004.json": {
+      "signature": "b15babb9b6918d59b230738447f80ea90329408b4515faad5b3943ed3b0d6529",
+      "frames": 2770200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0012.json": {
+      "signature": "48176a573026e06b9f86878bea36bcdebb3472740c132067abcc019760c3dde1",
+      "frames": 2054400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0032.json": {
+      "signature": "97a9279c102d5446e7469df1d2ba4601467feb082652121dd4b2e469ebc49828",
+      "frames": 2590800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0024.json": {
+      "signature": "4771e3fce405fa8eaa055d730231a6a5e49d719528b5a70ceb304503d19cc604",
+      "frames": 1176000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0008.json": {
+      "signature": "058096defbd5e1c9170e5637510e74f76efe127a976f1a8f783c80f73b1aad17",
+      "frames": 2090400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0015.json": {
+      "signature": "7b4eeb57c3d5ed7b9dd3e9dff13d7319f5e2083418d131e1d70f58502f1d6287",
+      "frames": 1948200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0003.json": {
+      "signature": "c3a680f1fa6b3ef56c252230f85816a21e851164d7dcb124591d64702efb8b84",
+      "frames": 2448600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0019.json": {
+      "signature": "db64d7a79cfd3ad76153bb70127b02a9bb1b0720633c24c432019c588caea783",
+      "frames": 2713200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0023.json": {
+      "signature": "f48277fdf2e02b379435fa6574e2539be1f2234bcfb7083e0d5480ab643de957",
+      "frames": 1845000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0035.json": {
+      "signature": "8f8fb58c27e2d8b653f0456023d5c9918b576ad6c34589cb0f2d5d1db46a404a",
+      "frames": 1104000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0034.json": {
+      "signature": "5f929fcc4e95fd6626aafb2a9e750b6349307a1bbf4ad7763153d4b9654c0b2d",
+      "frames": 2489400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0022.json": {
+      "signature": "f5764171656ae443f44eab8b4d48cd77954168f5e990cea54f2f6d7ee8916bf7",
+      "frames": 2482200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0018.json": {
+      "signature": "40eb8de2fd45067c6b1c18dc8b65ea679d08568895b84077ce32e31523b7b070",
+      "frames": 2589000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0002.json": {
+      "signature": "2a694126d1ab89bf69bb2c6cfd196c387f16dae71584745d6e062f52f46f503b",
+      "frames": 2516400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0014.json": {
+      "signature": "bf08862cb0682c2d140bce82f87c9082315bfac7ba5377181c2591d57c8dd3fe",
+      "frames": 2351400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0001.json": {
+      "signature": "1050642df332a4a14b7e45d39f1f1c207e362ce3cc3036c72f9c2c3a06fe19c3",
+      "frames": 2058600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0017.json": {
+      "signature": "7fdff722374ffd35161cd295ba8e7f53e21c2b2d74f1269fcae55ae0b58111a4",
+      "frames": 1533000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0021.json": {
+      "signature": "3712edcd669735ac3fc41b0d003e9dc73af1fbd7793747058bedeef330f452a1",
+      "frames": 2308800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0020.json": {
+      "signature": "6b34e2492e17c7023fa5fae2bbd514477dea165aee3d7ff2a805cfbe90f9f288",
+      "frames": 2194200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0016.json": {
+      "signature": "88ddba87d7adaef763f833bd5fde318b98757febe25390ea2da781118469b48c",
+      "frames": 2295000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0031.json": {
+      "signature": "7c2253bb299d60fef1c8dbb7243cf2336cb17b97ee5e9ca55a8ed1a5d5e0fdfd",
+      "frames": 2236200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0027.json": {
+      "signature": "86603c10015d22b9f384ddf0599b9510c2475a5edfeedff32b120505519e942b",
+      "frames": 2584200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0007.json": {
+      "signature": "f3629ad63d454362a181b20a0c3f5ac1c4c788ed3833453a57d2019c1185a4f4",
+      "frames": 2392800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0011.json": {
+      "signature": "5ef5a53690a4d8160cd22cd2c932b5d959c9d5cdd53578ffedcd0057b70f4397",
+      "frames": 2133000,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0010.json": {
+      "signature": "dac7f88cfdeb9494e490ba2f0d3cb34dad5a326cd8ea5c744dfde39295a194b5",
+      "frames": 2364600,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0006.json": {
+      "signature": "65a5e0a8752754ce2406a8e6e29f9392a6f5ac65ba90cfe7057db12cdb06a23e",
+      "frames": 2764200,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0026.json": {
+      "signature": "ebef1171b259b16c860085b4f3d06834408ec655a6e7df1a969861083bc235b8",
+      "frames": 2648400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/09-c02/0030.json": {
+      "signature": "13e4cc4c1b732e40259c91e5f86620919527f144f8a233defa9085841ec436d5",
+      "frames": 2765400,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    },
+    "kokoro-heart-build/01-toc/0001.json": {
+      "signature": "fdbbcff2a9bcfe34618a1ce0110ab30b3b67048d117c1ebd62fba5c96ecb65be",
+      "frames": 3136800,
+      "text_coverage": true,
+      "voice": "af_heart",
+      "speed": 0.95
+    }
+  }
+}
