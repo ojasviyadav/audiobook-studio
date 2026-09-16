@@ -42,27 +42,32 @@ class Gate:
         self.work_since = None
         self.reason = 'Waiting for cool readings'
 
-    def update(self, now, temperature, valid=True):
+    def update(self, now, temperature, valid=True, gpu_temperature=None):
         valid = valid and temperature is not None and math.isfinite(temperature)
+        valid = valid and (gpu_temperature is None or math.isfinite(gpu_temperature))
+        gpu_hot = gpu_temperature is not None and gpu_temperature >= self.settings['gpu_pause_c']
+        gpu_warm = gpu_temperature is not None and gpu_temperature >= self.settings['gpu_resume_c']
         if not valid:
             self.running = False
             self.cool_since = None
             self.rest_until = max(self.rest_until, now + self.settings['rest_seconds'])
             self.reason = 'Temperature reading unavailable'
-        elif self.running and temperature >= self.settings['pause_c']:
+        elif self.running and (temperature >= self.settings['pause_c'] or gpu_hot):
             self.running = False
             self.cool_since = None
             self.rest_until = now + self.settings['rest_seconds']
-            self.reason = f"Temperature reached {self.settings['pause_c']:g} C"
+            self.reason = (f"GPU reached {self.settings['gpu_pause_c']:g} C" if gpu_hot
+                           else f"CPU reached {self.settings['pause_c']:g} C")
         elif self.running and now - self.work_since >= self.settings['work_seconds']:
             self.running = False
             self.cool_since = None
             self.rest_until = now + self.settings['rest_seconds']
             self.reason = 'Scheduled cooling break'
         elif not self.running:
-            if temperature >= self.settings['resume_c']:
+            if temperature >= self.settings['resume_c'] or gpu_warm:
                 self.cool_since = None
-                self.reason = f"Waiting for temperature below {self.settings['resume_c']:g} C"
+                self.reason = (f"Waiting for GPU below {self.settings['gpu_resume_c']:g} C" if gpu_warm
+                               else f"Waiting for CPU below {self.settings['resume_c']:g} C")
             else:
                 if self.cool_since is None:
                     self.cool_since = now
@@ -122,7 +127,12 @@ def main():
                 hottest_key, temperature = None, None
                 if failure_since is None:
                     failure_since = now
-            enabled = gate.update(now, temperature, valid=error is None)
+            # Treat every non-GPU sensor conservatively under the CPU target.
+            cpu_temperature = max((v for k,v in values.items() if not k.startswith('Tg')), default=None)
+            gpu_temperature = max((v for k,v in values.items() if k.startswith('Tg')), default=None)
+            enabled = gate.update(now, cpu_temperature,
+                                  valid=error is None and gpu_temperature is not None,
+                                  gpu_temperature=gpu_temperature)
             if (ROOT/'pause.request').exists():
                 gate.running = enabled = False
                 gate.cool_since = None
@@ -142,8 +152,10 @@ def main():
                 stopped = False
             snapshot = {'time': time.time(), 'running': enabled and proc is not None,
                 'reason': gate.reason, 'hottest_sensor': hottest_key, 'temperature_c': temperature,
-                'cpu_max_c': max((v for k,v in values.items() if k.startswith(('Tp', 'Te', 'Ts'))), default=None),
-                'gpu_max_c': max((v for k,v in values.items() if k.startswith('Tg')), default=None),
+                'cpu_max_c': cpu_temperature,
+                'gpu_max_c': gpu_temperature,
+                'gpu_target_c': gate.settings['gpu_ceiling_c'], 'gpu_pause_c': gate.settings['gpu_pause_c'],
+                'gpu_resume_below_c': gate.settings['gpu_resume_c'],
                 'peak_observed_c': peak, 'error': error, 'guard_pid': os.getpid(),
                 'narration_pid': proc.pid if proc else None, 'pause_c': gate.settings['pause_c'], 'resume_below_c': gate.settings['resume_c'], 'user_target_c': gate.settings['ceiling_c'], 'app_controls': True}
             temp = WORK / 'temperature-status.tmp'
@@ -164,7 +176,7 @@ def main():
         if proc and proc.returncode:
             raise RuntimeError(f'Narration exited with status {proc.returncode}; see its log.')
         completed = True
-        print('Audiobook completed. Temperature monitor stopped.', flush=True)
+        print('Processing completed. Temperature monitor stopped.', flush=True)
     except BaseException as exc:
         last_error = str(exc)
         raise
@@ -183,7 +195,8 @@ def main():
         atomic_json(WORK/'temperature-status.json', dict(time=time.time(), running=False,
             complete=completed, reason='Complete' if completed else ('Stopped by you' if (ROOT/'stop.request').exists() else 'Conversion stopped'),
             error=last_error, guard_pid=os.getpid(), narration_pid=None, app_controls=True, peak_observed_c=peak,
-            pause_c=gate.settings['pause_c'], resume_below_c=gate.settings['resume_c'], user_target_c=gate.settings['ceiling_c']))
+            pause_c=gate.settings['pause_c'], resume_below_c=gate.settings['resume_c'], user_target_c=gate.settings['ceiling_c'],
+            gpu_target_c=gate.settings['gpu_ceiling_c'], gpu_pause_c=gate.settings['gpu_pause_c'], gpu_resume_below_c=gate.settings['gpu_resume_c']))
 
 if __name__ == '__main__':
     main()

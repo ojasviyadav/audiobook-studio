@@ -3,8 +3,6 @@ from pathlib import Path, PurePosixPath
 from html.parser import HTMLParser
 from urllib.parse import unquote
 import argparse
-import ast
-import hashlib
 import json
 import os
 import posixpath
@@ -14,6 +12,7 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from scripts.runtime_settings import validate, lock_audio_settings
+from scripts.tts_contract import narration_batches, audio_signature
 
 REPO = Path(__file__).resolve().parent
 NS = {'o': 'http://www.idpf.org/2007/opf', 'n': 'http://www.daisy.org/z3986/2005/ncx/',
@@ -119,7 +118,7 @@ def prepare(args):
             cover = project / ('cover' + suffix)
             cover.write_bytes(cover_bytes)
         safe_title = re.sub(r'[/\\\x00-\x1f]', '_', title)
-        config = dict(title=title, author=author, source=str(source), voice=args.voice, speed=args.speed,
+        config = dict(title=title, author=author, source=str(source), voice=args.voice, speed=args.speed, backend=getattr(args,'backend','kokoro'),
                       model_dir=str(args.model_dir.resolve()), sensor_dir=str(args.sensor_dir.resolve()),
                       cover=str(cover) if cover else None, output_name=f'{safe_title} — {args.voice}.m4b')
         (project/'book.json').write_text(json.dumps(config, indent=2))
@@ -128,18 +127,14 @@ def prepare(args):
         if archive: archive.close()
 
 def plan(project, config):
-    # Read only the pure splitting function; do not import the narration runtime.
-    tree = ast.parse((REPO/'scripts/kokoro_audiobook.py').read_text())
-    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'batches')
-    scope = {}; exec(compile(ast.Module(body=[fn], type_ignores=[]), 'batches', 'exec'), scope)
     chapters = json.loads((project/'chapters.json').read_text())
     remaining = []
     work = project/'kokoro-heart-build'; work.mkdir(exist_ok=True)
     for chapter in chapters:
         pending = 0
-        for n, text in enumerate(scope['batches']((project/'build'/f'{chapter["file"]}.txt').read_text()), 1):
+        for n, text in enumerate(narration_batches((project/'build'/f'{chapter["file"]}.txt').read_text(),config), 1):
             path = work/chapter['file']/f'{n:04d}.json'
-            signature = hashlib.sha256((config['voice']+str(config['speed'])+text).encode()).hexdigest()
+            signature = audio_signature(config,text)
             try:
                 done = path.with_suffix('.flac').exists() and json.loads(path.read_text())['signature'] == signature
             except (OSError, ValueError, KeyError): done = False
@@ -160,15 +155,20 @@ def main():
     prep.add_argument('--project', type=Path, required=True)
     prep.add_argument('--model-dir', type=Path, required=True)
     prep.add_argument('--sensor-dir', type=Path, default=REPO/'vendor/smctemp')
-    prep.add_argument('--voice', default='af_heart')
-    prep.add_argument('--speed', type=float, default=0.95)
+    prep.add_argument('--voice')
+    prep.add_argument('--backend', choices=['kokoro','qwen','voxtral'], default='kokoro')
+    prep.add_argument('--speed', type=float)
     for command in ('run', 'status', 'benchmark'):
         p=sub.add_parser(command); p.add_argument('project', type=Path)
     args=parser.parse_args()
     if args.command == 'prepare':
+        args.voice = args.voice or {'kokoro':'af_heart','qwen':'Ryan','voxtral':'neutral_male'}[args.backend]
+        args.speed = args.speed if args.speed is not None else (0.95 if args.backend=='kokoro' else 1.0)
         if not 0.5 <= args.speed <= 2: parser.error('speed must be between 0.5 and 2')
         prepare(args); return
     project=args.project.resolve(); config=json.loads((project/'book.json').read_text())
+    if args.command=='benchmark' and config.get('backend','kokoro')!='kokoro':
+        parser.error('The existing CPU/GPU benchmark is for Kokoro only.')
     env=dict(os.environ, AUDIOBOOK_PROJECT=str(project), AUDIOBOOK_SENSORS=config['sensor_dir'])
     if args.command in ('run', 'benchmark'):
         # Keep a lock for this entire invocation to prevent duplicate workers.
@@ -178,7 +178,8 @@ def main():
             config = validate(config)
             lock_audio_settings(project, config)
             plan(project, config)
-            command = [sys.executable,str(REPO/'scripts/temperature_guard.py')]
+            engine_python = sys.executable if config['backend']=='kokoro' else str(REPO/'.venv-mlx/bin/python')
+            command = [engine_python,str(REPO/'scripts/temperature_guard.py')]
             if args.command == 'benchmark':
                 command += [sys.executable,str(REPO/'scripts/benchmark_kokoro.py')]
             subprocess.run(command, env=env, check=True)

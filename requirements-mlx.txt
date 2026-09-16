@@ -1,0 +1,4 @@
+mlx-audio[tts]==0.5.4
+soundfile
+scipy
+requests

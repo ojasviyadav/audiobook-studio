@@ -1,4 +1,5 @@
 .venv/
+.venv-mlx/
 __pycache__/
 *.pyc
 projects/
@@ -19,3 +20,5 @@ vendor/smctemp/*.dSYM/
 .active-project.json
 .app-action.lock
 .conversion-run.lock
+
+.engine-verification.lock

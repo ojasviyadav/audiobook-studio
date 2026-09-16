@@ -21,6 +21,7 @@ def until(fn, timeout=10):
 with tempfile.TemporaryDirectory(prefix='kokoro-guard-check-') as folder:
     work = Path(folder)
     (work/'temperature').write_text('60')
+    (work/'gpu-temperature').write_text('50')
     (work/'dummy.py').write_text('''import subprocess,sys,time,json,os
 from pathlib import Path
 children=[subprocess.Popen([sys.executable,'-c','import time; time.sleep(60)']) for _ in range(3)]
@@ -31,11 +32,11 @@ time.sleep(60)
 from pathlib import Path
 import temperature_guard as g
 g.WORK=Path(sys.argv[1])
-g.read_temperatures=lambda keys: {'Tp01':float((g.WORK/'temperature').read_text()),'Tg01':50}
+g.read_temperatures=lambda keys: {'Tp01':float((g.WORK/'temperature').read_text()),'Tg01':float((g.WORK/'gpu-temperature').read_text())}
 base=g.Gate
 class FastGate(base):
-    def update(self, now, temperature, valid=True):
-        return super().update(now*10, temperature, valid)
+    def update(self, now, temperature, valid=True, gpu_temperature=None):
+        return super().update(now*10, temperature, valid, gpu_temperature)
 g.Gate=FastGate
 sys.argv=['test',sys.executable,str(g.WORK/'dummy.py'),str(g.WORK/'pids')]
 g.main()
@@ -54,6 +55,14 @@ g.main()
         until(lambda:len(states())==4 and all('T' in s for s in states()))
         (work/'temperature').write_text('60')
         until(lambda:len(states())==4 and all('T' not in s for s in states()))
+        # GPU heat can pause independently. Both groups must cool before resume.
+        (work/'gpu-temperature').write_text('89')
+        until(lambda:len(states())==4 and all('T' in s for s in states()))
+        (work/'gpu-temperature').write_text('85')
+        time.sleep(0.7)
+        assert all('T' in s for s in states())
+        (work/'gpu-temperature').write_text('84')
+        until(lambda:len(states())==4 and all('T' not in s for s in states()))
         # GUI pause stays in force even with cool sensors; resume removes it.
         (work/'pause.request').touch()
         until(lambda:len(states())==4 and all('T' in s for s in states()))
@@ -69,7 +78,7 @@ g.main()
         final=json.loads((work/'temperature-status.json').read_text())
         assert final['reason']=='Stopped by you' and not final['running']
         until(lambda:not states() or all('Z' in s for s in states()))
-        print('PASS: thermal pause, cooling, manual pause/resume, sensor failure, and stop reach all workers.')
+        print('PASS: independent CPU/GPU limits, cooling, manual pause/resume, sensor failure, and stop reach all workers.')
     finally:
         supervisor.terminate()
         output,_=supervisor.communicate(timeout=15)

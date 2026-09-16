@@ -1,0 +1,29 @@
+{
+  "qwen_planning_seconds": [
+    23494.1568957616,
+    34748.49472917677
+  ],
+  "kokoro_production_seconds": 8318.522026150777,
+  "qwen_to_kokoro_ratio": [
+    2.8243186496235118,
+    4.177243820469381
+  ],
+  "qwen_worker_measurements": [
+    {
+      "worker": 0,
+      "words": 416,
+      "seconds": 279.21047166455537,
+      "load_seconds": 7.742432083003223
+    },
+    {
+      "worker": 1,
+      "words": 253,
+      "seconds": 138.8662896718888,
+      "load_seconds": 7.742378417024156
+    }
+  ],
+  "model_revisions": {
+    "qwen": "1c6c0ff58c43afa8df571facde2efa077efd85e2",
+    "voxtral": "f98fc91b9cb5adc7dab56102c690458276c14c6a"
+  }
+}

@@ -1,4 +1,4 @@
-"""Create a resumable local Kokoro audiobook from the verified EPUB text."""
+"""Create a resumable local audiobook from the extracted EPUB text."""
 from pathlib import Path
 import hashlib
 import json
@@ -30,15 +30,16 @@ os.environ.setdefault('HF_HUB_OFFLINE', '1')
 
 import numpy as np
 import soundfile as sf
-import torch
-from kokoro import KModel, KPipeline
+from runtime_settings import validate
+from tts_contract import narration_batches, audio_signature, kokoro_coverage
 
 CODE = Path(__file__).resolve().parent
 ROOT = Path(os.environ['AUDIOBOOK_PROJECT']).resolve()
 WORK = ROOT / 'kokoro-heart-build'
 WORK.mkdir(exist_ok=True)
 RATE = 24000
-CONFIG = json.loads((ROOT / 'book.json').read_text())
+CONFIG = validate(json.loads((ROOT / 'book.json').read_text()))
+BACKEND = CONFIG['backend']
 VOICE = CONFIG.get('voice', 'af_heart')
 SPEED = CONFIG.get('speed', 0.95)
 NORMAL = lambda x: re.sub(r'\s+', '', x)
@@ -109,8 +110,11 @@ def batches(text, limit=1800):
     if pending:
         yield '\n\n'.join(pending)
 
-torch.set_num_threads(4 if args.device == 'cpu' and not args.assemble_only else 2)
-torch.set_num_interop_threads(1)
+if BACKEND == 'kokoro':
+    import torch
+    from kokoro import KModel, KPipeline
+    torch.set_num_threads(4 if args.device == 'cpu' and not args.assemble_only else 2)
+    torch.set_num_interop_threads(1)
 os.nice(15)
 chapters = json.loads((ROOT / 'chapters.json').read_text())
 assignment = json.loads((WORK / 'parallel-plan.json').read_text()) if args.worker is not None else {}
@@ -119,27 +123,43 @@ if args.worker is not None:
     assert set(assignment.values()).issubset({0, 1, 2})
 device = args.device
 wait_until_cool()
-model_dir = Path(CONFIG['model_dir'])
-weights = model_dir / 'kokoro-v1_0.pth'
-assert hashlib.sha256(weights.read_bytes()).hexdigest() == '496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4'
 if not args.assemble_only:
-    if device == 'mps' and not torch.backends.mps.is_available():
-        raise RuntimeError('Metal GPU processing is unavailable.')
-    model = KModel(repo_id='hexgrad/Kokoro-82M', config=str(model_dir / 'config.json'), model=str(weights)).to(device).eval()
-    pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M', model=model)
-    pipeline.load_voice(VOICE)
+    if BACKEND == 'kokoro':
+        model_dir = Path(CONFIG['model_dir'])
+        weights = model_dir / 'kokoro-v1_0.pth'
+        assert hashlib.sha256(weights.read_bytes()).hexdigest() == '496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4'
+        if device == 'mps' and not torch.backends.mps.is_available():
+            raise RuntimeError('Metal GPU processing is unavailable.')
+        model = KModel(repo_id='hexgrad/Kokoro-82M', config=str(model_dir / 'config.json'), model=str(weights)).to(device).eval()
+        pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M', model=model)
+        pipeline.load_voice(VOICE)
+    else:
+        engine = None
+
+def generate_segments(part):
+    global engine
+    if BACKEND != 'kokoro':
+        if engine is None:
+            from mlx_backend import MLXAudioBackend
+            engine = MLXAudioBackend(CONFIG)
+        for audio in engine.generate(part): yield audio, None
+        return
+    for result in pipeline(part, voice=VOICE, speed=SPEED, split_pattern=r'\n\n+'):
+        assert result.audio is not None, 'Missing audio'
+        assert len(result.phonemes) <= 510, 'Phoneme limit'
+        yield result.audio.detach().cpu().numpy(), result.graphemes
 total_words = sum(c['words'] for c in chapters)
 completed_words = 0
 for chapter in chapters:
     text = (ROOT / 'build' / (chapter['file'] + '.txt')).read_text()
-    for number, part in enumerate(batches(text), 1):
+    for number, part in enumerate(narration_batches(text,CONFIG), 1):
         folder = WORK / chapter['file']
         receipt = folder / f'{number:04d}.json'
-        signature = hashlib.sha256((VOICE + str(SPEED) + part).encode()).hexdigest()
+        signature = audio_signature(CONFIG,part)
         if (folder / f'{number:04d}.flac').exists() and receipt.exists() and json.loads(receipt.read_text())['signature'] == signature:
             completed_words += len(part.split())
 started = time.monotonic()
-print(f'{VOICE}, speed {SPEED}; device={device}, threads={torch.get_num_threads()}, temperature supervisor={GUARDED}. {completed_words:,}/{total_words:,} words already saved.', flush=True)
+print(f'{BACKEND}, {VOICE}, speed {SPEED}; device={device}, temperature supervisor={GUARDED}. {completed_words:,}/{total_words:,} words already saved.', flush=True)
 
 for index, chapter in enumerate(chapters, 1):
     # Disjoint section ownership prevents all audio/receipt/encoding collisions.
@@ -147,7 +167,7 @@ for index, chapter in enumerate(chapters, 1):
         continue
     stem = chapter['file']
     text = (ROOT / 'build' / (stem + '.txt')).read_text()
-    parts = list(batches(text))
+    parts = list(narration_batches(text,CONFIG))
     assert NORMAL(''.join(parts)) == NORMAL(text)
     folder = WORK / stem
     folder.mkdir(exist_ok=True)
@@ -156,34 +176,36 @@ for index, chapter in enumerate(chapters, 1):
     for number, part in enumerate(parts, 1):
         dest = folder / f'{number:04d}.flac'
         receipt = folder / f'{number:04d}.json'
-        signature = hashlib.sha256((VOICE + str(SPEED) + part).encode()).hexdigest()
+        signature = audio_signature(CONFIG,part)
         if dest.exists() and receipt.exists() and json.loads(receipt.read_text())['signature'] == signature:
             frames = sf.info(dest).frames
         else:
             if args.assemble_only:
                 raise RuntimeError(f'Missing verified audio: {stem}/{number}; cannot assemble.')
             audio_parts, spoken = [], []
+            batch_started_at = time.time()
+            first_model_load = BACKEND != 'kokoro' and engine is None
             wait_until_cool()
             segment_started = time.monotonic()
-            for result in pipeline(part, voice=VOICE, speed=SPEED, split_pattern=r'\n\n+'):
-                assert result.audio is not None, (stem, number, 'Missing audio')
-                assert len(result.phonemes) <= 510, (stem, number, 'Phoneme limit')
-                audio = result.audio.detach().cpu().numpy()
+            for audio, graphemes in generate_segments(part):
                 assert len(audio) > 0 and np.isfinite(audio).all()
                 assert np.sqrt(np.mean(audio ** 2)) > 0.0001
                 audio_parts.extend([audio, np.zeros(round(RATE * CONFIG.get('paragraph_gap', 0.2)), dtype=np.float32)])
-                spoken.append(result.graphemes)
+                if graphemes is not None: spoken.append(graphemes)
                 # Rest for at least three times the segment's processing time.
                 # Small segments still receive a minimum 15-second break.
                 cooling_break(CONFIG.get('segment_rest', 0.5) if GUARDED else max(15, 3 * (time.monotonic() - segment_started)))
                 segment_started = time.monotonic()
-            assert NORMAL(''.join(spoken)) == NORMAL(part), (stem, number, 'Text coverage mismatch', part, spoken)
+            if BACKEND == 'kokoro':
+                assert kokoro_coverage(''.join(spoken)) == kokoro_coverage(part), (stem, number, 'Text coverage mismatch', part, spoken)
             combined = np.concatenate(audio_parts)
             temp = folder / f'{number:04d}.part.flac'
             sf.write(temp, combined, RATE, subtype='PCM_16')
             temp.replace(dest)
             frames = len(combined)
-            receipt.write_text(json.dumps({'signature': signature, 'frames': frames, 'text_coverage': True, 'voice': VOICE, 'speed': SPEED, 'device': device, 'threads': torch.get_num_threads()}))
+            receipt.write_text(json.dumps({'signature': signature, 'frames': frames, 'text_coverage': BACKEND == 'kokoro', 'backend':BACKEND, 'voice': VOICE, 'speed': SPEED, 'device': device, 'threads': torch.get_num_threads() if BACKEND=='kokoro' else None,
+                'worker': args.worker, 'words': len(part.split()), 'started_at': batch_started_at,
+                'finished_at': time.time(), 'model_load_seconds': engine.load_seconds if first_model_load else 0}))
             completed_words += len(part.split())
         samples.append(dest)
         elapsed = time.monotonic() - started
@@ -225,7 +247,7 @@ if args.worker is not None:
 def escape(value):
     return re.sub(r'([\\=;#])', r'\\\1', value).replace('\n', ' ')
 
-metadata = [';FFMETADATA1', 'title=' + escape(CONFIG['title'] + ' — ' + VOICE), 'artist=' + escape(CONFIG['author']), 'album=' + escape(CONFIG['title']), 'genre=Audiobook', 'comment=AI-generated narration: Kokoro ' + VOICE + ', speed ' + str(SPEED) + '. Refer to the EPUB for images.']
+metadata = [';FFMETADATA1', 'title=' + escape(CONFIG['title'] + ' — ' + VOICE), 'artist=' + escape(CONFIG['author']), 'album=' + escape(CONFIG['title']), 'genre=Audiobook', 'comment=AI-generated narration: ' + BACKEND + ' ' + VOICE + ', speed ' + str(SPEED) + '. Refer to the EPUB for images.']
 elapsed_ms = 0
 for chapter in chapters:
     end = elapsed_ms + round(chapter['duration'] * 1000)

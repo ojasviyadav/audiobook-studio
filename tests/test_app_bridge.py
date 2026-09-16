@@ -14,10 +14,24 @@ import test_prepare
 
 
 class AppTests(unittest.TestCase):
+    def test_log_shows_worker_progress_before_old_coordinator_errors(self):
+        with tempfile.TemporaryDirectory() as folder:
+            project=Path(folder); work=project/'kokoro-heart-build'; work.mkdir()
+            (project/'kokoro-audiobook.log').write_text('KeyboardInterrupt\nStarted mps worker 0\n')
+            (work/'parallel-0-mps.log').write_text('Batch 5/7\n')
+            (work/'parallel-1-mps.log').write_text('Worker 1 completed its sections.\n')
+            with patch.object(app,'settings',return_value={'output_name':'book.m4b'}), patch.object(app,'state',return_value=({},True,True)), patch.object(app,'progress',return_value={'percent':98.8}):
+                result=app.snapshot(project)
+            self.assertIn('Batch 5/7',result['log'])
+            self.assertIn('Worker 1 completed',result['log'])
+            self.assertIn('earlier runs',result['log'])
+            self.assertLess(result['log'].index('Batch 5/7'),result['log'].index('KeyboardInterrupt'))
+            self.assertTrue(result['active'])
+
     def test_detached_job_records_an_engine_failure(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder); (root/'scripts').mkdir(); project=root/'book'; project.mkdir()
-            for name in ('app_job.py','runtime_settings.py'):
+            for name in ('app_job.py','runtime_settings.py','tts_contract.py'):
                 shutil.copyfile(app.REPO/'scripts'/name,root/'scripts'/name)
             (root/'convert.py').write_text('import sys\nassert sys.argv[1]=="run"\nraise SystemExit(13)\n')
             process=subprocess.Popen([sys.executable,str(root/'scripts/app_job.py'),str(project)],stdin=subprocess.PIPE,start_new_session=True)
@@ -28,7 +42,10 @@ class AppTests(unittest.TestCase):
 
     def test_temperature_relationships_and_limit(self):
         self.assertEqual(validate({})['ceiling_c'], 90)
-        for settings in ({'ceiling_c': 95}, {'pause_c': 89}, {'resume_c': 87}, {'speed': float('nan')}):
+        self.assertEqual(validate({})['gpu_ceiling_c'], 93)
+        self.assertEqual(validate({'gpu_ceiling_c':93})['ceiling_c'],90)
+        for settings in ({'ceiling_c': 95}, {'pause_c': 89}, {'resume_c': 87}, {'speed': float('nan')},
+                         {'gpu_ceiling_c':94}, {'gpu_pause_c':92}, {'gpu_resume_c':89}):
             with self.assertRaises(ValueError): validate(settings)
 
     def test_prepare_progress_save_and_receipt_lock(self):

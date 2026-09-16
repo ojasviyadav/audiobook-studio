@@ -11,15 +11,23 @@ struct BookSettings: Codable, Sendable {
     var sensorDir = ""
     var outputName = "Audiobook.m4b"
     var cover: String? = nil
-    var voice = "af_heart"
-    var speed = 0.95
+    var backend = "qwen"
+    var voice = "Ryan"
+    var speed = 1.0
+    var instruct = "Natural audiobook narration. Calm, clear, steady pacing."
+    var chunkChars = 1000
+    var temperature = 0.8
+    var maxTokens = 4096
     var bitrate = 96
     var paragraphGap = 0.2
     var chapterGap = 1.0
     var segmentRest = 0.5
     var ceilingC = 90.0
-    var pauseC = 86.0
-    var resumeC = 82.0
+    var pauseC = 82.0
+    var resumeC = 78.0
+    var gpuCeilingC = 93.0
+    var gpuPauseC = 89.0
+    var gpuResumeC = 85.0
     var workSeconds = 60.0
     var restSeconds = 5.0
     var stableSeconds = 1.0
@@ -42,6 +50,7 @@ struct ThermalInfo: Decodable, Sendable {
     var cpuMaxC: Double?
     var gpuMaxC: Double?
     var userTargetC: Double?
+    var gpuTargetC: Double?
     var running: Bool?
     var error: String?
     var time: Double?
@@ -60,6 +69,7 @@ struct BridgeResponse: Decodable, Sendable {
     var phase: String?
     var output: String?
     var log: String?
+    var preview: String?
 }
 struct BridgeRequest: Encodable, Sendable {
     var action: String
@@ -125,6 +135,41 @@ final class StudioModel: ObservableObject {
         guard active, let seconds = snapshot?.progress?.etaSeconds, seconds > 0 else { return "Learning the pace" }
         let minutes = Int(ceil(seconds / 60))
         return "About \(minutes) min remaining"
+    }
+
+    var voices: [String] {
+        switch settings.backend {
+        case "qwen": return ["Ryan", "Aiden"]
+        case "voxtral": return ["casual_male", "casual_female", "cheerful_female", "neutral_male", "neutral_female", "fr_male", "fr_female", "es_male", "es_female", "de_male", "de_female", "it_male", "it_female", "pt_male", "pt_female", "nl_male", "nl_female", "ar_male", "hi_male", "hi_female"]
+        default: return ["af_heart", "af_bella", "am_michael"]
+        }
+    }
+    func voiceLabel(_ voice: String) -> String {
+        ["af_heart":"Heart", "af_bella":"Bella", "am_michael":"Michael"][voice] ?? voice.replacingOccurrences(of: "_", with: " ").capitalized
+    }
+    func selectEngine(_ engine: String) {
+        guard !audioLocked else { return }
+        player?.stop(); previewing = false
+        settings.backend = engine
+        settings.voice = engine == "qwen" ? "Ryan" : (engine == "voxtral" ? "neutral_male" : "af_heart")
+        settings.speed = engine == "kokoro" ? 0.95 : 1
+        settings.pauseC = engine == "kokoro" ? 86 : 82
+        settings.resumeC = engine == "kokoro" ? 82 : 78
+        settings.gpuPauseC = 89
+        settings.gpuResumeC = 85
+        settings.workSeconds = engine == "voxtral" ? 3 : 60
+        settings.restSeconds = engine == "voxtral" ? 10 : 5
+        settings.stableSeconds = 1
+        settings.pauseC = min(settings.pauseC, settings.ceilingC - 2)
+        settings.resumeC = min(settings.resumeC, settings.pauseC - 2)
+        settings.gpuPauseC = min(settings.gpuPauseC, settings.gpuCeilingC - 2)
+        settings.gpuResumeC = min(settings.gpuResumeC, settings.gpuPauseC - 2)
+        notice = "Cooling defaults set for the selected engine. You can change them below."
+        if !prepared && !settings.source.isEmpty { updateProjectPath() }
+    }
+    private func updateProjectPath() {
+        let name = URL(fileURLWithPath: settings.source).deletingPathExtension().lastPathComponent
+        project = URL(fileURLWithPath: outputFolder).appendingPathComponent(name + " — " + settings.backend).path
     }
 
     func persistPaths() {
@@ -203,9 +248,11 @@ final class StudioModel: ObservableObject {
                     UserDefaults.standard.set(project, forKey: "project")
                     snapshot = try await call("start")
                     notice = "Conversion started. You can close this window; the job continues."
-                } else if action == "check" {
-                    let response = try await call("check", config: settings)
+                } else if ["check", "install", "download", "preview"].contains(action) {
+                    notice = ["install":"Installing the MLX runtime…", "download":"Downloading the selected model. This can take several minutes…", "preview":"Making a short sample under temperature control…"][action] ?? "Checking setup…"
+                    let response = try await call(action, config: settings)
                     notice = response.message ?? "Setup is ready."
+                    if let path = response.preview { try playSample(URL(fileURLWithPath: path)) }
                 } else {
                     if action == "resume" { _ = try await call("save", config: settings) }
                     let response = try await call(action, config: action == "save" ? settings : nil)
@@ -229,7 +276,7 @@ final class StudioModel: ObservableObject {
         panel.canChooseFiles = true; panel.canChooseDirectories = true; panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url {
             settings.source = url.path
-            project = URL(fileURLWithPath: outputFolder).appendingPathComponent(url.deletingPathExtension().lastPathComponent).path
+            updateProjectPath()
         }
     }
     func chooseExisting() {
@@ -248,7 +295,7 @@ final class StudioModel: ObservableObject {
             case "sensors": settings.sensorDir = url.path
             default:
                 outputFolder = url.path
-                if !settings.source.isEmpty { project = url.appendingPathComponent(URL(fileURLWithPath: settings.source).deletingPathExtension().lastPathComponent).path }
+                if !settings.source.isEmpty { updateProjectPath() }
             }
             persistPaths()
         }
@@ -263,17 +310,19 @@ final class StudioModel: ObservableObject {
     }
     func previewVoice() {
         if previewing { player?.stop(); previewing = false; return }
+        if settings.backend != "kokoro" { perform("preview"); return }
         let name = ["af_heart": "Heart", "af_bella": "Bella", "am_michael": "Michael"][settings.voice] ?? "Heart"
         guard let url = Bundle.main.url(forResource: name, withExtension: "mp3", subdirectory: "Voice Samples") else {
             error = "The voice sample is not included in this app build."; return
         }
-        do {
+        do { try playSample(url) } catch { self.error = error.localizedDescription }
+    }
+    private func playSample(_ url: URL) throws {
             player = try AVAudioPlayer(contentsOf: url); player?.play(); previewing = true
             let duration = player?.duration ?? 0
             Task { [weak self] in
                 try? await Task.sleep(for: .seconds(duration))
                 if self?.player?.isPlaying == false { self?.previewing = false }
             }
-        } catch { self.error = error.localizedDescription }
     }
 }

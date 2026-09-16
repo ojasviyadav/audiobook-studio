@@ -43,6 +43,20 @@ The model file is about 327 MB and fits in memory. Memory capacity is not the pr
 - [Exact comparison script](compare_backends.py)
 - [Current production measurements](parallel-run-measurements.json)
 
-The audiobook was 61.8% saved before the selected configuration resumed. Final production time and output validation will be added after completion. The ebook, text, and audio are outside the repository.
+## Completed production run
+
+Emotional Design is complete: 77,001 source words, 21 sections, 31,799.143 seconds (8 hours 50 minutes), and 377,959,798 bytes. The final pipeline checked chapter titles, chapter count, duration, and full FFmpeg decode before it renamed the final M4B. The ebook, extracted text, and audio remain outside the repository.
+
+The measured two-GPU interval begins at the saved baseline of 47,992 words. It produced another 28,855 words and 12,784.975 seconds of audio in 51.95 minutes. Recorded enabled time was 21.26 minutes; pauses took about 30.69 minutes. This is 4.10 seconds of speech per elapsed second. Pauses include cooling and missing temperature readings. Worker 1 finished about 16 minutes before worker 0, so the latter part did not use both workers.
+
+At that sustained rate, all 77,001 words would take about **2 hours 19 minutes**. This is an estimate for the final configuration, not a measured clean full-book run. Earlier text was produced during different configurations. Model loading, passage differences, unequal section lengths, and final assembly can change the result.
+
+The first measured interval stopped at the copyright-page text check. Kokoro omitted an apostrophe between digits and a slash-only paragraph. A narrow comparison fix retained checks for missing words and digits. The last 154 words were then generated, and the M4B was assembled and verified. Retry and repair time is excluded from the throughput estimate.
+
+The supervisor recorded a **92.625°C peak** during the original production interval. The saved periodic samples reached 90.422°C for the CPU and 79.577°C for the GPU; their interval is too wide to recover every peak. The old run used shared pause/resume settings of 86°C/82°C. New runs have separate CPU and GPU targets: CPU 90°C, GPU 93°C as permitted later by the user. New MLX samples use CPU pause/resume of 82°C/78°C and GPU 89°C/85°C.
+
+The measurement script now ends at the last recorded sample for guard 11617. It does not count later idle time or other guard sessions. It also recovers worker assignment from the original logs, because a resume rewrites the current assignment file.
+
+Qwen and Voxtral have also completed local two-GPU sample conversions. Their results and the Qwen full-book estimate are in [the model comparison](qwen-vs-kokoro.md). These tests did not compare their CPU and GPU backends. Voxtral's test included interruptions and cooling changes; its elapsed time cannot establish a speed ranking.
 
 Sources: [Kokoro](https://github.com/hexgrad/kokoro), [PyTorch Metal support](https://docs.pytorch.org/docs/2.14/notes/mps.html), [Apple GPU thread scheduling](https://developer.apple.com/documentation/metal/performing-calculations-on-a-gpu).

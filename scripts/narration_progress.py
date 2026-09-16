@@ -1,28 +1,23 @@
 """Read verified receipts from all narration workers without loading the model."""
 from pathlib import Path
 import os
-import ast
-import hashlib
 import json
 
 CODE = Path(__file__).resolve().parent
 ROOT = Path(os.environ['AUDIOBOOK_PROJECT']).resolve()
 WORK = ROOT / 'kokoro-heart-build'
-tree = ast.parse((CODE / 'kokoro_audiobook.py').read_text())
-fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'batches')
-scope = {}
-exec(compile(ast.Module(body=[fn], type_ignores=[]), 'batches', 'exec'), scope)
+from tts_contract import narration_batches, audio_signature
 chapters = json.loads((ROOT / 'chapters.json').read_text())
 config = json.loads((ROOT / 'book.json').read_text())
 saved, total, frames = 0, 0, 0
 remaining = []
 for chapter in chapters:
     missing = 0
-    for n, part in enumerate(scope['batches']((ROOT / 'build' / (chapter['file'] + '.txt')).read_text()), 1):
+    for n, part in enumerate(narration_batches((ROOT / 'build' / (chapter['file'] + '.txt')).read_text(), config), 1):
         words = len(part.split())
         total += words
         receipt = WORK / chapter['file'] / f'{n:04d}.json'
-        signature = hashlib.sha256((config['voice'] + str(config['speed']) + part).encode()).hexdigest()
+        signature = audio_signature(config, part)
         try:
             data = json.loads(receipt.read_text())
             good = data['signature'] == signature and receipt.with_suffix('.flac').exists()

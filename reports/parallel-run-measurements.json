@@ -1,33 +1,43 @@
 {
-  "observed_at": 1789590741.940587,
-  "start_time": 1789590629.442282,
-  "elapsed_seconds": 112.49830508232117,
-  "observed_enabled_seconds": 40.06186056137085,
+  "source_guard_pid": 11617,
+  "start_time": 1789590680.794836,
+  "end_time": 1789593798.039457,
+  "elapsed_seconds": 3117.244621038437,
+  "observed_enabled_seconds": 1275.5605051517487,
+  "observed_paused_seconds": 1841.6841158866882,
+  "baseline_words": 47992,
+  "new_words": 28855,
   "workers": [
     {
       "worker": 0,
       "device": "mps",
-      "new_batches": 2,
-      "audio_seconds": 188.0,
-      "latest_batch_at": 1789590734.7452888,
-      "speech_seconds_per_total_elapsed_second": 1.6711362883416787,
-      "speech_seconds_per_enabled_second": 4.692742607697973
+      "new_batches": 58,
+      "words": 14138,
+      "audio_seconds": 6716.775,
+      "latest_batch_at": 1789593745.2748911,
+      "speech_seconds_per_total_elapsed_second": 2.1547154030415694,
+      "speech_seconds_per_enabled_second": 5.265743939916774
     },
     {
       "worker": 1,
       "device": "mps",
-      "new_batches": 3,
-      "audio_seconds": 245.475,
-      "latest_batch_at": 1789590738.4456532,
-      "speech_seconds_per_total_elapsed_second": 2.182032874365285,
-      "speech_seconds_per_enabled_second": 6.127398891620531
+      "new_batches": 62,
+      "words": 14717,
+      "audio_seconds": 6068.200000000002,
+      "latest_batch_at": 1789592769.127841,
+      "speech_seconds_per_total_elapsed_second": 1.9466550552514943,
+      "speech_seconds_per_enabled_second": 4.75728119167353
     }
   ],
-  "peak_recorded_c": 87.203,
+  "projected_full_book_seconds": 8318.522026150777,
+  "peak_recorded_c": 92.625,
+  "peak_cpu_c": 90.422,
+  "peak_gpu_c": 79.577,
   "limitations": [
-    "Production workers process different source passages; this is not a controlled comparison.",
-    "Elapsed time includes startup and cooling; enabled time is derived from supervisor transitions.",
-    "GPU commands already submitted can finish during a host-process pause.",
-    "These measurements do not establish a compute or memory-bandwidth bottleneck."
+    "This interval ends with the copyright-page text-check failure. The later retry and final assembly are separate.",
+    "The old assignment was recovered from worker logs because resumes replaced parallel-plan.json.",
+    "Elapsed time begins at the saved baseline and includes cooling, missing-sensor pauses, and uneven worker completion.",
+    "Pause time is estimated from supervisor transitions. Submitted GPU work can continue during host pauses.",
+    "This is an extrapolation from the remaining book text, not a complete clean two-GPU book run."
   ]
 }

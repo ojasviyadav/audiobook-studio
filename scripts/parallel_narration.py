@@ -1,6 +1,7 @@
 """Two Metal workers in the temperature guard's process group."""
 from pathlib import Path
 import os
+import json
 import signal
 import subprocess
 import sys
@@ -19,8 +20,10 @@ signal.signal(signal.SIGTERM, stop)
 signal.signal(signal.SIGINT, stop)
 env = dict(os.environ, KOKORO_PARENT_PID=str(os.getpid()))
 children, logs = [], []
+assignment = json.loads((ROOT/'kokoro-heart-build/parallel-plan.json').read_text())
 try:
     for worker, device in enumerate(('mps', 'mps')):
+        if worker not in assignment.values(): continue
         log = (ROOT / f'kokoro-heart-build/parallel-{worker}-{device}.log').open('a', buffering=1)
         logs.append(log)
         # Inherit the process group: the guard pauses/resumes ALL workers,
