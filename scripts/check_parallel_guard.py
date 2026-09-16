@@ -48,7 +48,7 @@ g.main()
         until(lambda:(work/'pids').exists())
         pids=json.loads((work/'pids').read_text())
         assert all(os.getpgid(pid)==pids[0] for pid in pids)
-        (work/'temperature').write_text('80')
+        (work/'temperature').write_text('86')
         def states():
             return subprocess.check_output(['ps','-o','stat=','-p',','.join(map(str,pids))],text=True).split()
         until(lambda:len(states())==4 and all('T' in s for s in states()))

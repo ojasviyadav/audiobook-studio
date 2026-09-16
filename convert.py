@@ -144,9 +144,9 @@ def plan(project, config):
             except (OSError, ValueError, KeyError): done = False
             if not done: pending += len(text.split())
         remaining.append((pending, chapter['file']))
-    loads, assignment = [0,0,0], {}
+    loads, assignment = [0,0], {}
     for words, stem in sorted(remaining, reverse=True):
-        worker = min(range(3), key=lambda i: loads[i])
+        worker = min(range(2), key=lambda i: loads[i])
         assignment[stem] = worker; loads[worker] += words
     (work/'parallel-plan.json').write_text(json.dumps(assignment, indent=2))
     print('Remaining words per worker:', loads, flush=True)

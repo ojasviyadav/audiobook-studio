@@ -1,0 +1,125 @@
+[
+  {
+    "config": "CPU \u00d7 1",
+    "iteration": 0,
+    "start_time": 1789590542.346837,
+    "end_time": 1789590560.72814,
+    "elapsed_seconds": 18.381301879882812,
+    "audio_seconds": 33.0,
+    "workers": [
+      {
+        "device": "cpu",
+        "threads": 4,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 18.38113307952881
+      }
+    ],
+    "guard_pid": 8726,
+    "speech_per_elapsed_second": 1.795302651338121,
+    "cooling_pause_seconds": 15.13838505744934,
+    "enabled_seconds": 3.2429168224334717,
+    "speech_per_enabled_second": 10.176024180366406
+  },
+  {
+    "config": "GPU \u00d7 1",
+    "iteration": 0,
+    "start_time": 1789590562.733294,
+    "end_time": 1789590564.3245382,
+    "elapsed_seconds": 1.591243028640747,
+    "audio_seconds": 33.0,
+    "workers": [
+      {
+        "device": "mps",
+        "threads": 2,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 1.5909287929534912
+      }
+    ],
+    "guard_pid": 8726,
+    "speech_per_elapsed_second": 20.738504053770388,
+    "cooling_pause_seconds": 0,
+    "enabled_seconds": 1.591243028640747,
+    "speech_per_enabled_second": 20.738504053770388
+  },
+  {
+    "config": "CPU \u00d7 2",
+    "iteration": 0,
+    "start_time": 1789590566.3262239,
+    "end_time": 1789590585.795829,
+    "elapsed_seconds": 19.469604015350342,
+    "audio_seconds": 66.0,
+    "workers": [
+      {
+        "device": "cpu",
+        "threads": 4,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 19.398582935333252
+      },
+      {
+        "device": "cpu",
+        "threads": 4,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 19.46942710876465
+      }
+    ],
+    "guard_pid": 8726,
+    "speech_per_elapsed_second": 3.3898994529094626,
+    "cooling_pause_seconds": 16.01274561882019,
+    "enabled_seconds": 3.4568583965301514,
+    "speech_per_enabled_second": 19.092480058265625
+  },
+  {
+    "config": "GPU \u00d7 2",
+    "iteration": 0,
+    "start_time": 1789590591.133954,
+    "end_time": 1789590593.626404,
+    "elapsed_seconds": 2.4924490451812744,
+    "audio_seconds": 66.0,
+    "workers": [
+      {
+        "device": "mps",
+        "threads": 2,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 2.434812307357788
+      },
+      {
+        "device": "mps",
+        "threads": 2,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 2.492276906967163
+      }
+    ],
+    "guard_pid": 8726,
+    "speech_per_elapsed_second": 26.479979651981154,
+    "cooling_pause_seconds": 0,
+    "enabled_seconds": 2.4924490451812744,
+    "speech_per_enabled_second": 26.479979651981154
+  },
+  {
+    "config": "GPU + CPU",
+    "iteration": 0,
+    "start_time": 1789590595.630869,
+    "end_time": 1789590612.789797,
+    "elapsed_seconds": 17.15892720222473,
+    "audio_seconds": 66.0,
+    "workers": [
+      {
+        "device": "mps",
+        "threads": 2,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 8.618836879730225
+      },
+      {
+        "device": "cpu",
+        "threads": 4,
+        "audio_seconds": 33.0,
+        "elapsed_seconds": 17.158764839172363
+      }
+    ],
+    "guard_pid": 8726,
+    "speech_per_elapsed_second": 3.846394312544365,
+    "cooling_pause_seconds": 13.914536237716675,
+    "enabled_seconds": 3.2443909645080566,
+    "speech_per_enabled_second": 20.342801074841333
+  }
+]

@@ -6,11 +6,11 @@ This repository was made for Emotional Design on a MacBook Pro with an M4 Pro, 1
 
 ## Operation
 
-- Two workers use the Metal GPU. One worker uses four CPU threads.
+- Two workers use the Metal GPU. CPU inference is disabled. The CPU prepares text and writes audio.
 - Workers own different sections. A saved section is not generated again.
 - Each audio batch has a text signature and a record of the voice, speed, sample count, and processing device.
 - One temperature monitor controls the full process group, including audio encoding.
-- Processing pauses at 80°C and resumes below 74°C after a cooling break. The user target is 90°C.
+- Processing pauses at 86°C and resumes below 82°C after a cooling break. The user target is 90°C.
 - A missing temperature reading pauses processing. A failed monitor stops its workers.
 - Final checks verify section order, chapter markers, duration, text coverage, and audio decoding.
 
@@ -63,7 +63,7 @@ python3 scripts/check_parallel_guard.py
 python3 -m py_compile convert.py scripts/*.py
 ```
 
-The process test uses small sleeping processes. It checks that all workers pause when the simulated temperature reaches the pause point, resume after cooling, and pause when readings fail. It does not heat the Mac.
+The process test uses small sleeping processes. It checks that all test workers pause when the simulated temperature reaches the pause point, resume after cooling, and pause when readings fail. It does not heat the Mac.
 
 ## First conversion
 

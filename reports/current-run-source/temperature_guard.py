@@ -44,26 +44,26 @@ class Gate:
         if not valid:
             self.running = False
             self.cool_since = None
-            self.rest_until = max(self.rest_until, now + 20)
+            self.rest_until = max(self.rest_until, now + 5)
             self.reason = 'Temperature reading unavailable'
-        elif self.running and temperature >= 80:
+        elif self.running and temperature >= 86:
             self.running = False
             self.cool_since = None
-            self.rest_until = now + 20
-            self.reason = 'Temperature reached 80 C'
-        elif self.running and now - self.work_since >= 30:
+            self.rest_until = now + 5
+            self.reason = 'Temperature reached 86 C'
+        elif self.running and now - self.work_since >= 60:
             self.running = False
             self.cool_since = None
-            self.rest_until = now + 20
+            self.rest_until = now + 5
             self.reason = 'Scheduled cooling break'
         elif not self.running:
-            if temperature >= 74:
+            if temperature >= 82:
                 self.cool_since = None
-                self.reason = 'Waiting for temperature below 74 C'
+                self.reason = 'Waiting for temperature below 82 C'
             else:
                 if self.cool_since is None:
                     self.cool_since = now
-                if now >= self.rest_until and now - self.cool_since >= 2:
+                if now >= self.rest_until and now - self.cool_since >= 1:
                     self.running = True
                     self.work_since = now
                     self.reason = 'Processing'
@@ -131,7 +131,7 @@ def main():
                 'cpu_max_c': max((v for k,v in values.items() if k.startswith(('Tp', 'Te', 'Ts'))), default=None),
                 'gpu_max_c': max((v for k,v in values.items() if k.startswith('Tg')), default=None),
                 'peak_observed_c': peak, 'error': error, 'guard_pid': os.getpid(),
-                'narration_pid': proc.pid if proc else None, 'pause_c': 80, 'resume_below_c': 74, 'user_target_c': 90}
+                'narration_pid': proc.pid if proc else None, 'pause_c': 86, 'resume_below_c': 82, 'user_target_c': 90}
             temp = WORK / 'temperature-status.tmp'
             temp.write_text(json.dumps(snapshot, indent=2))
             temp.replace(WORK / 'temperature-status.json')
@@ -144,13 +144,13 @@ def main():
                 raise RuntimeError('Sensor readings failed for 60 seconds; narration is stopped.')
             if proc is None and len(sys.argv) > 1 and now - started > 600:
                 raise RuntimeError('Mac has not reached the restart temperature within 10 minutes; narration remains stopped.')
-            time.sleep(0.25)
+            time.sleep(0.1)
         if proc.returncode:
             raise RuntimeError(f'Narration exited with status {proc.returncode}; see its log.')
         (WORK / 'temperature-status.json').write_text(json.dumps({
             'time': time.time(), 'running': False, 'complete': True,
             'reason': 'Processing completed', 'peak_observed_c': peak,
-            'pause_c': 80, 'resume_below_c': 74, 'user_target_c': 90}, indent=2))
+            'pause_c': 86, 'resume_below_c': 82, 'user_target_c': 90}, indent=2))
         print('Audiobook completed. Temperature monitor stopped.', flush=True)
     finally:
         if proc is not None and proc.poll() is None:

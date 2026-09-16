@@ -2,14 +2,15 @@
   "project": "/Users/ojasviyadav/Work/Audiobooks/Emotional Design",
   "voice": "af_heart",
   "speed": 0.95,
-  "started_tracking_at": 1789590680.794836,
+  "started_tracking_at": 1789589796.430965,
   "topology": [
     "mps",
-    "mps"
+    "mps",
+    "cpu"
   ],
-  "cpu_threads": 0,
+  "cpu_threads": 4,
   "gpu_host_threads": 2,
-  "source_guard_pid": 11617,
+  "source_guard_pid": 1924,
   "existing_receipts": {
     "kokoro-heart-build/05-fm2/0001.json": {
       "signature": "bfc4536762ddcafc89131493470efb603f5b23d58a9149d7045092c49ecfc99d",
@@ -514,15 +515,6 @@
       "text_coverage": true,
       "voice": "af_heart",
       "speed": 0.95
-    },
-    "kokoro-heart-build/12-c04/0023.json": {
-      "signature": "9c2ed14f1c33b940af820a0faca9dff268bc12e7bed04177a1e08559842d83d6",
-      "frames": 2859000,
-      "text_coverage": true,
-      "voice": "af_heart",
-      "speed": 0.95,
-      "device": "cpu",
-      "threads": 4
     },
     "kokoro-heart-build/12-c04/0022.json": {
       "signature": "50103b0ddb7a339056a07525ddf86824600bf6fc66df20bc8713a815d312694a",
@@ -1154,24 +1146,6 @@
       "voice": "af_heart",
       "speed": 0.95
     },
-    "kokoro-heart-build/11-c03/0046.json": {
-      "signature": "95abfa3fed15cb59f51fa69ec49c8b1960d9a7d41653fa503dd4ab31e210a3e7",
-      "frames": 2083800,
-      "text_coverage": true,
-      "voice": "af_heart",
-      "speed": 0.95,
-      "device": "mps",
-      "threads": 2
-    },
-    "kokoro-heart-build/11-c03/0047.json": {
-      "signature": "52511bbfb4e6534fa6b69a23d17bdffef85e5e37032016caab3b9a2ef8ceb9c9",
-      "frames": 2353800,
-      "text_coverage": true,
-      "voice": "af_heart",
-      "speed": 0.95,
-      "device": "mps",
-      "threads": 2
-    },
     "kokoro-heart-build/11-c03/0010.json": {
       "signature": "40e5f55a1cc3dc189ed9474df638bd4ad734fb60ce696e588784d88ac68a5049",
       "frames": 1496400,
@@ -1465,24 +1439,6 @@
       "text_coverage": true,
       "voice": "af_heart",
       "speed": 0.95
-    },
-    "kokoro-heart-build/14-c06/0002.json": {
-      "signature": "755f5ce07e7a4328ba06c2eb7079943767d8cb03fe16e3a4b707811fdfc5e96f",
-      "frames": 1569600,
-      "text_coverage": true,
-      "voice": "af_heart",
-      "speed": 0.95,
-      "device": "mps",
-      "threads": 2
-    },
-    "kokoro-heart-build/14-c06/0001.json": {
-      "signature": "8c29f8d6283ade55128b3971bc5c95b5169774cf5f4901ef46ce54731f59e096",
-      "frames": 2128800,
-      "text_coverage": true,
-      "voice": "af_heart",
-      "speed": 0.95,
-      "device": "mps",
-      "threads": 2
     }
   }
 }

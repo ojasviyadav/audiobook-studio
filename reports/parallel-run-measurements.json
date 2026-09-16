@@ -1,40 +1,31 @@
 {
-  "observed_at": 1789589922.860922,
-  "start_time": 1789589776.244819,
-  "elapsed_seconds": 146.61610317230225,
-  "observed_enabled_seconds": 5.540422201156616,
+  "observed_at": 1789590741.940587,
+  "start_time": 1789590629.442282,
+  "elapsed_seconds": 112.49830508232117,
+  "observed_enabled_seconds": 40.06186056137085,
   "workers": [
     {
       "worker": 0,
       "device": "mps",
-      "new_batches": 0,
-      "audio_seconds": 0,
-      "latest_batch_at": null,
-      "speech_seconds_per_total_elapsed_second": 0.0,
-      "speech_seconds_per_enabled_second": 0.0
+      "new_batches": 2,
+      "audio_seconds": 188.0,
+      "latest_batch_at": 1789590734.7452888,
+      "speech_seconds_per_total_elapsed_second": 1.6711362883416787,
+      "speech_seconds_per_enabled_second": 4.692742607697973
     },
     {
       "worker": 1,
       "device": "mps",
-      "new_batches": 0,
-      "audio_seconds": 0,
-      "latest_batch_at": null,
-      "speech_seconds_per_total_elapsed_second": 0.0,
-      "speech_seconds_per_enabled_second": 0.0
-    },
-    {
-      "worker": 2,
-      "device": "cpu",
-      "new_batches": 0,
-      "audio_seconds": 0,
-      "latest_batch_at": null,
-      "speech_seconds_per_total_elapsed_second": 0.0,
-      "speech_seconds_per_enabled_second": 0.0
+      "new_batches": 3,
+      "audio_seconds": 245.475,
+      "latest_batch_at": 1789590738.4456532,
+      "speech_seconds_per_total_elapsed_second": 2.182032874365285,
+      "speech_seconds_per_enabled_second": 6.127398891620531
     }
   ],
-  "peak_recorded_c": 86.594,
+  "peak_recorded_c": 87.203,
   "limitations": [
-    "Different source passages and two GPU workers versus one CPU worker.",
+    "Production workers process different source passages; this is not a controlled comparison.",
     "Elapsed time includes startup and cooling; enabled time is derived from supervisor transitions.",
     "GPU commands already submitted can finish during a host-process pause.",
     "These measurements do not establish a compute or memory-bandwidth bottleneck."

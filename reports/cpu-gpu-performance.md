@@ -1,38 +1,48 @@
-# CPU and GPU performance on the M4 Pro
+# CPU and GPU comparison on the M4 Pro
 
-Status: conversion is in progress. Final measurements will be added when it finishes.
+**Selected configuration: two Metal GPU workers, with CPU inference disabled.** This was the fastest of the five configurations tested. It is now the default for narration.
 
-## Hardware and software
+Hardware: M4 Pro, 14 CPU cores, 20 GPU cores, and 48 GB of memory. Software: macOS Tahoe 26.6.2, Kokoro 0.9.4, and PyTorch 2.14.0. Voice: Heart, speed 0.95, 24 kHz audio.
 
-- MacBook Pro, 14-inch, November 2024.
-- Apple M4 Pro: 14 CPU cores, 20 GPU cores, 48 GB of memory. Core counts were read from macOS.
-- macOS Tahoe 26.6.2.
-- Kokoro 0.9.4, PyTorch 2.14.0, Heart (`af_heart`), speed 0.95, 24 kHz audio.
-- The model file is about 327 MB. It fits in memory. This does not establish whether memory bandwidth limits inference.
+## Direct measurements
 
-## Completed measurements
+Each worker generated the same 33-second passage. Models and voices were loaded first. Each worker completed a warm-up. CPU workers used four threads each. GPU workers used two host threads each. Parallel tests started two jobs together and waited for both to finish.
 
-A previous CPU test used four PyTorch threads and the same passage twice. The model was already loaded.
+| Configuration | Speech produced | Elapsed time | Cooling pauses | Speech per elapsed second |
+|---|---:|---:|---:|---:|
+| CPU × 1 | 33 s | 18.38 s | 15.14 s | 1.8× |
+| GPU × 1 | 33 s | 1.59 s | 0.00 s | 20.7× |
+| CPU × 2 | 66 s | 19.47 s | 16.01 s | 3.4× |
+| GPU × 2 | 66 s | 2.49 s | 0.00 s | 26.5× |
+| GPU + CPU | 66 s | 17.16 s | 13.91 s | 3.8× |
 
-| Trial | Speech produced | Processing time | Speech / processing time |
-|---|---:|---:|---:|
-| CPU, trial 1 | about 33 seconds | 2.743 seconds | about 12.0× |
-| CPU, trial 2 | about 33 seconds | 2.545 seconds | about 13.0× |
+Two GPU workers produced **28% more speech per second than one GPU worker**. Both use the same physical 20-core GPU. One worker can also use multiple GPU cores.
 
-Earlier GPU sample times included voice download or startup work. They are not a fair CPU/GPU comparison. A later controlled comparison could not start because of temperature limits. No result from that comparison is claimed.
+CPU work caused long cooling pauses that stopped the whole group. After subtracting recorded pauses, one CPU worker took about 3.24 seconds and two CPU workers took about 3.46 seconds. The GPU was faster in this test even before cooling time was counted. An earlier standalone CPU test took 2.743 and 2.545 seconds for 33 seconds of speech.
 
-## Current parallel run
+## Temperature and limits
 
-Two processes use Metal on the same 20-core GPU. One process uses four CPU threads. Each process has its own model and owns separate book sections. A single GPU process can use multiple GPU cores. Two GPU processes do not mean two physical GPUs.
+The supervisor pauses at 86°C and resumes below 82°C. The user target is 90°C. A reading reached **94.45°C** during the CPU-inclusive comparison despite the pause control. Further CPU trials were stopped. This controller cannot guarantee a 90°C hardware ceiling.
 
-The remaining work was assigned by word count: 10,594 words to GPU worker 0, 10,251 to GPU worker 1, and 9,376 to the CPU worker. This is a production workload, not a controlled benchmark. Text, sentence lengths, speech duration, compilation, and cooling pauses can differ between workers.
+One measured trial per configuration completed. The planned second round was cancelled after the temperature overshoot. These are short tests on one passage, not a sustained full-book benchmark. Other apps were open. Cooling time is counted because it affects the time needed to finish a book. Pause durations were reconstructed from supervisor transitions.
 
-All workers pause together at 80°C and resume below 74°C. The user target is 90°C. CPU readings exceeded 90°C during some paused periods. The monitor cannot enforce a limit on unrelated applications. Therefore, do not report that the full run stayed below 90°C.
+The mixed CPU/GPU test waited for both jobs. An independent continuous queue can have different throughput. More than two GPU workers, other CPU thread counts, and other inference engines were not tested. Two GPU workers are the **best tested configuration**, not proof of the best possible configuration.
 
-## Interpretation so far
+## Worker and core are different
 
-CPU processing is already faster than playback. There is not yet enough comparable evidence to say that GPU processing is faster for this installed Kokoro implementation. Parallel processing must be assessed by total output per elapsed time, including cooling breaks. More workers can increase heat and reduce the time available for processing.
+A worker is a Python process with a Kokoro model. A GPU core is part of the chip. Metal schedules each worker's calculations on the same GPU. A worker is not assigned one core. Three GPU workers are possible, but they still share the same 20 cores and memory bandwidth. More workers can reduce idle time, but can also increase resource contention, memory use, and heat. Three workers have not been measured.
 
-Neither model size nor core count alone establishes a compute or memory-bandwidth limit. Kokoro performs neural network calculations and also spends time on text preparation, device scheduling, synchronization, and audio output. A firm compute-versus-bandwidth diagnosis needs hardware counters or a suitable profile. That measurement has not been made here.
+## Compute or memory limit
 
-Sources: [Kokoro](https://github.com/hexgrad/kokoro), [PyTorch Metal support](https://docs.pytorch.org/docs/2.14/notes/mps.html).
+The model file is about 327 MB and fits in memory. Memory capacity is not the problem. These timings do not establish whether computation or memory bandwidth limits each model operation. No hardware-counter profile was collected. The useful result is that GPU inference gave higher measured throughput, while CPU inference added heat and cooling delays.
+
+## Records
+
+- [Raw timing data](controlled-comparison.json)
+- [Comparison temperature records](controlled-comparison-thermal.json)
+- [Exact comparison script](compare_backends.py)
+- [Current production measurements](parallel-run-measurements.json)
+
+The audiobook was 61.8% saved before the selected configuration resumed. Final production time and output validation will be added after completion. The ebook, text, and audio are outside the repository.
+
+Sources: [Kokoro](https://github.com/hexgrad/kokoro), [PyTorch Metal support](https://docs.pytorch.org/docs/2.14/notes/mps.html), [Apple GPU thread scheduling](https://developer.apple.com/documentation/metal/performing-calculations-on-a-gpu).

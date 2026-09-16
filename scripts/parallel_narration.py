@@ -1,4 +1,4 @@
-"""Two Metal workers and one CPU worker in the temperature guard's process group."""
+"""Two Metal workers in the temperature guard's process group."""
 from pathlib import Path
 import os
 import signal
@@ -20,7 +20,7 @@ signal.signal(signal.SIGINT, stop)
 env = dict(os.environ, KOKORO_PARENT_PID=str(os.getpid()))
 children, logs = [], []
 try:
-    for worker, device in enumerate(('mps', 'mps', 'cpu')):
+    for worker, device in enumerate(('mps', 'mps')):
         log = (ROOT / f'kokoro-heart-build/parallel-{worker}-{device}.log').open('a', buffering=1)
         logs.append(log)
         # Inherit the process group: the guard pauses/resumes ALL workers,

@@ -40,7 +40,7 @@ for row in workers:
 result={'observed_at':observed_at,'start_time':started,'elapsed_seconds':elapsed,
         'observed_enabled_seconds':active,'workers':workers,
         'peak_recorded_c':max((r.get('temperature_c') or 0 for r in readings),default=None),
-        'limitations':['Different source passages and two GPU workers versus one CPU worker.',
+        'limitations':['Production workers process different source passages; this is not a controlled comparison.',
                       'Elapsed time includes startup and cooling; enabled time is derived from supervisor transitions.',
                       'GPU commands already submitted can finish during a host-process pause.',
                       'These measurements do not establish a compute or memory-bandwidth bottleneck.']}
