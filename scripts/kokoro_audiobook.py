@@ -171,11 +171,11 @@ for index, chapter in enumerate(chapters, 1):
                 audio = result.audio.detach().cpu().numpy()
                 assert len(audio) > 0 and np.isfinite(audio).all()
                 assert np.sqrt(np.mean(audio ** 2)) > 0.0001
-                audio_parts.extend([audio, np.zeros(round(RATE * 0.20), dtype=np.float32)])
+                audio_parts.extend([audio, np.zeros(round(RATE * CONFIG.get('paragraph_gap', 0.2)), dtype=np.float32)])
                 spoken.append(result.graphemes)
                 # Rest for at least three times the segment's processing time.
                 # Small segments still receive a minimum 15-second break.
-                cooling_break(0.5 if GUARDED else max(15, 3 * (time.monotonic() - segment_started)))
+                cooling_break(CONFIG.get('segment_rest', 0.5) if GUARDED else max(15, 3 * (time.monotonic() - segment_started)))
                 segment_started = time.monotonic()
             assert NORMAL(''.join(spoken)) == NORMAL(part), (stem, number, 'Text coverage mismatch', part, spoken)
             combined = np.concatenate(audio_parts)
@@ -196,7 +196,7 @@ for index, chapter in enumerate(chapters, 1):
         if number % 5 == 0 or number == len(parts):
             print(f'  Batch {number}/{len(parts)}; overall {status["percent"]}%; elapsed {elapsed/60:.1f} min.', flush=True)
     m4a = WORK / (stem + '.m4a')
-    expected_duration = sum(sf.info(sample).frames for sample in samples) / RATE + 1
+    expected_duration = sum(sf.info(sample).frames for sample in samples) / RATE + CONFIG.get('chapter_gap', 1.0)
     if m4a.exists():
         try:
             duration = float(probe(m4a)['format']['duration'])
@@ -212,8 +212,8 @@ for index, chapter in enumerate(chapters, 1):
             audio, sample_rate = sf.read(sample, dtype='float32')
             assert sample_rate == RATE
             target.write(audio)
-        target.write(np.zeros(RATE, dtype=np.float32))
-    run(['ffmpeg', '-v', 'error', '-y', '-i', chapter_wav, '-c:a', 'aac', '-b:a', '96k', m4a])
+        target.write(np.zeros(round(RATE * CONFIG.get('chapter_gap', 1.0)), dtype=np.float32))
+    run(['ffmpeg', '-v', 'error', '-y', '-i', chapter_wav, '-c:a', 'aac', '-b:a', str(CONFIG.get('bitrate', 96)) + 'k', m4a])
     chapter['duration'] = float(probe(m4a)['format']['duration'])
     chapter_wav.unlink()
     print(f'  Section complete: {chapter["duration"]/60:.1f} min audio.', flush=True)

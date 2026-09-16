@@ -7,6 +7,7 @@ import signal
 import subprocess
 import sys
 import time
+from runtime_settings import DEFAULTS, validate
 
 CODE = Path(__file__).resolve().parent
 ROOT = Path(os.environ['AUDIOBOOK_PROJECT']).resolve()
@@ -34,6 +35,7 @@ def start_guard_watchdog():
 
 class Gate:
     def __init__(self):
+        self.settings = dict(DEFAULTS)
         self.running = False
         self.rest_until = 0.0
         self.cool_since = None
@@ -45,26 +47,26 @@ class Gate:
         if not valid:
             self.running = False
             self.cool_since = None
-            self.rest_until = max(self.rest_until, now + 5)
+            self.rest_until = max(self.rest_until, now + self.settings['rest_seconds'])
             self.reason = 'Temperature reading unavailable'
-        elif self.running and temperature >= 86:
+        elif self.running and temperature >= self.settings['pause_c']:
             self.running = False
             self.cool_since = None
-            self.rest_until = now + 5
-            self.reason = 'Temperature reached 86 C'
-        elif self.running and now - self.work_since >= 60:
+            self.rest_until = now + self.settings['rest_seconds']
+            self.reason = f"Temperature reached {self.settings['pause_c']:g} C"
+        elif self.running and now - self.work_since >= self.settings['work_seconds']:
             self.running = False
             self.cool_since = None
-            self.rest_until = now + 5
+            self.rest_until = now + self.settings['rest_seconds']
             self.reason = 'Scheduled cooling break'
         elif not self.running:
-            if temperature >= 82:
+            if temperature >= self.settings['resume_c']:
                 self.cool_since = None
-                self.reason = 'Waiting for temperature below 82 C'
+                self.reason = f"Waiting for temperature below {self.settings['resume_c']:g} C"
             else:
                 if self.cool_since is None:
                     self.cool_since = now
-                if now >= self.rest_until and now - self.cool_since >= 1:
+                if now >= self.rest_until and now - self.cool_since >= self.settings['stable_seconds']:
                     self.running = True
                     self.work_since = now
                     self.reason = 'Processing'
@@ -101,11 +103,15 @@ def main():
     failure_since = None
     log = (WORK / 'temperature-readings.jsonl').open('a', buffering=1)
     narration_log = (ROOT / 'kokoro-audiobook.log').open('a', buffering=1)
+    completed = False
+    last_error = None
     try:
         while proc is None or proc.poll() is None:
             now = time.monotonic()
             values, error = {}, None
             try:
+                config_path = ROOT/'book.json'
+                gate.settings = validate(json.loads(config_path.read_text())) if config_path.exists() else dict(DEFAULTS)
                 values = read_temperatures(keys)
                 hottest_key = max(values, key=values.get)
                 temperature = values[hottest_key]
@@ -117,6 +123,13 @@ def main():
                 if failure_since is None:
                     failure_since = now
             enabled = gate.update(now, temperature, valid=error is None)
+            if (ROOT/'pause.request').exists():
+                gate.running = enabled = False
+                gate.cool_since = None
+                gate.reason = 'Paused by you'
+            if (ROOT/'stop.request').exists():
+                gate.reason = 'Stopped by you'
+                break
             if proc is None and enabled:
                 env = dict(os.environ, KOKORO_THERMAL_GUARD_PID=str(os.getpid()))
                 proc = subprocess.Popen(command,
@@ -132,7 +145,7 @@ def main():
                 'cpu_max_c': max((v for k,v in values.items() if k.startswith(('Tp', 'Te', 'Ts'))), default=None),
                 'gpu_max_c': max((v for k,v in values.items() if k.startswith('Tg')), default=None),
                 'peak_observed_c': peak, 'error': error, 'guard_pid': os.getpid(),
-                'narration_pid': proc.pid if proc else None, 'pause_c': 86, 'resume_below_c': 82, 'user_target_c': 90}
+                'narration_pid': proc.pid if proc else None, 'pause_c': gate.settings['pause_c'], 'resume_below_c': gate.settings['resume_c'], 'user_target_c': gate.settings['ceiling_c'], 'app_controls': True}
             temp = WORK / 'temperature-status.tmp'
             temp.write_text(json.dumps(snapshot, indent=2))
             temp.replace(WORK / 'temperature-status.json')
@@ -146,13 +159,15 @@ def main():
             if proc is None and len(sys.argv) > 1 and now - started > 600:
                 raise RuntimeError('Mac has not reached the restart temperature within 10 minutes; narration remains stopped.')
             time.sleep(0.1)
-        if proc.returncode:
+        if (ROOT/'stop.request').exists():
+            return
+        if proc and proc.returncode:
             raise RuntimeError(f'Narration exited with status {proc.returncode}; see its log.')
-        (WORK / 'temperature-status.json').write_text(json.dumps({
-            'time': time.time(), 'running': False, 'complete': True,
-            'reason': 'Processing completed', 'peak_observed_c': peak,
-            'pause_c': 86, 'resume_below_c': 82, 'user_target_c': 90}, indent=2))
+        completed = True
         print('Audiobook completed. Temperature monitor stopped.', flush=True)
+    except BaseException as exc:
+        last_error = str(exc)
+        raise
     finally:
         if proc is not None and proc.poll() is None:
             os.killpg(proc.pid, signal.SIGTERM)
@@ -164,6 +179,11 @@ def main():
                 proc.wait()
         log.close()
         narration_log.close()
+        from runtime_settings import atomic_json
+        atomic_json(WORK/'temperature-status.json', dict(time=time.time(), running=False,
+            complete=completed, reason='Complete' if completed else ('Stopped by you' if (ROOT/'stop.request').exists() else 'Conversion stopped'),
+            error=last_error, guard_pid=os.getpid(), narration_pid=None, app_controls=True, peak_observed_c=peak,
+            pause_c=gate.settings['pause_c'], resume_below_c=gate.settings['resume_c'], user_target_c=gate.settings['ceiling_c']))
 
 if __name__ == '__main__':
     main()

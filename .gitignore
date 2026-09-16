@@ -14,3 +14,8 @@ vendor/smctemp/smctemp
 vendor/smctemp/read_sensors
 vendor/smctemp/*.dSYM/
 .DS_Store
+.build/
+*.app/
+.active-project.json
+.app-action.lock
+.conversion-run.lock

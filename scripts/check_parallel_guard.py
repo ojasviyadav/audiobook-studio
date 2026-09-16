@@ -50,14 +50,26 @@ g.main()
         assert all(os.getpgid(pid)==pids[0] for pid in pids)
         (work/'temperature').write_text('86')
         def states():
-            return subprocess.check_output(['ps','-o','stat=','-p',','.join(map(str,pids))],text=True).split()
+            return subprocess.run(['ps','-o','stat=','-p',','.join(map(str,pids))],capture_output=True,text=True).stdout.split()
         until(lambda:len(states())==4 and all('T' in s for s in states()))
         (work/'temperature').write_text('60')
+        until(lambda:len(states())==4 and all('T' not in s for s in states()))
+        # GUI pause stays in force even with cool sensors; resume removes it.
+        (work/'pause.request').touch()
+        until(lambda:len(states())==4 and all('T' in s for s in states()))
+        time.sleep(0.3)
+        assert all('T' in s for s in states())
+        (work/'pause.request').unlink()
         until(lambda:len(states())==4 and all('T' not in s for s in states()))
         # A read failure must pause the whole process group too.
         (work/'temperature').write_text('unavailable')
         until(lambda:len(states())==4 and all('T' in s for s in states()))
-        print('PASS: three workers share a group; temperature and sensor failure pause all; cooling resumes all.')
+        (work/'stop.request').touch()
+        until(lambda:supervisor.poll() is not None)
+        final=json.loads((work/'temperature-status.json').read_text())
+        assert final['reason']=='Stopped by you' and not final['running']
+        until(lambda:not states() or all('Z' in s for s in states()))
+        print('PASS: thermal pause, cooling, manual pause/resume, sensor failure, and stop reach all workers.')
     finally:
         supervisor.terminate()
         output,_=supervisor.communicate(timeout=15)

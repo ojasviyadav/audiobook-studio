@@ -13,6 +13,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
+from scripts.runtime_settings import validate, lock_audio_settings
 
 REPO = Path(__file__).resolve().parent
 NS = {'o': 'http://www.idpf.org/2007/opf', 'n': 'http://www.daisy.org/z3986/2005/ncx/',
@@ -174,6 +175,8 @@ def main():
         import fcntl
         with (project/'conversion.lock').open('w') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            config = validate(config)
+            lock_audio_settings(project, config)
             plan(project, config)
             command = [sys.executable,str(REPO/'scripts/temperature_guard.py')]
             if args.command == 'benchmark':
