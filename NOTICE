@@ -1,0 +1,16 @@
+Audiobook Studio
+Copyright (c) 2026 Ojasvi Yadav
+
+The MIT License in LICENSE applies to all files in this repository, except
+the contents of vendor/smctemp.
+
+vendor/smctemp contains smctemp (https://github.com/narugit/smctemp). That
+code is under the GNU General Public License, version 2. Its license text is
+in vendor/smctemp/LICENSE. The GPL-2.0 terms apply to those files, and to any
+binary built from them.
+
+The application binary does not link the smctemp code. The application starts
+the compiled read_sensors program as a separate process.
+
+Python packages and model checkpoints are not included in this repository.
+Their licenses apply separately. See docs/engines.md for the model licenses.
