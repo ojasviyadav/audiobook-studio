@@ -192,4 +192,6 @@ Ebooks, extracted book projects, recordings, model weights, Python environments,
 
 This app expects a readable EPUB. It does not remove DRM.
 
+Audiobook Studio source code uses the MIT License. The code in vendor/smctemp uses GPL-2.0.
+
 The temperature reader includes [smctemp](https://github.com/narugit/smctemp), with its [GPL-2.0 license](vendor/smctemp/LICENSE). Model and dependency licenses apply separately. In particular, the selected Voxtral checkpoint has a noncommercial license. Model links and licenses are listed in [Engine notes](docs/engines.md).
