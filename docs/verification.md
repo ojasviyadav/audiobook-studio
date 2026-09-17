@@ -28,3 +28,5 @@ Version 1.3, build 6 adds saved-engine labels, a separate Qwen-version draft, lo
 Final checks for build 6: 10 Swift tests, 16 base Python tests, 6 MLX tests, and the simulated process-group guard check passed. The release build and strict signature check passed. The new-book layout was rendered from SwiftUI source and inspected. The app was reopened after confirming that narration was complete. The native control service could open Finder and Activity Monitor but returned “native pipe closed before response” for the Audiobook Studio window, so live control testing remains limited.
 
 The app now sets its running Dock icon from the bundled PNG. The build also registers the bundle with Launch Services, and the Info.plist names the ICNS file explicitly. No global icon cache was deleted.
+
+Finder Get Info confirmed version 1.3 and displayed the teal book-and-sound icon after the update. The app process was reopened with the new binary.
