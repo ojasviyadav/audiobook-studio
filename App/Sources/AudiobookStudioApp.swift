@@ -1,8 +1,17 @@
 import SwiftUI
 import AppKit
 
+@MainActor
+final class StudioAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Set the running Dock image too, even when Launch Services has an old placeholder cached.
+        if let icon = StudioAssets.icon { NSApplication.shared.applicationIconImage = icon }
+    }
+}
+
 @main
 struct AudiobookStudioApp: App {
+    @NSApplicationDelegateAdaptor(StudioAppDelegate.self) private var appDelegate
     @StateObject private var model = StudioModel()
     var body: some Scene {
         WindowGroup("Audiobook Studio") {
@@ -26,6 +35,7 @@ struct AudiobookStudioApp: App {
 
 struct StudioView: View {
     @ObservedObject var model: StudioModel
+    @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -62,15 +72,20 @@ struct StudioView: View {
             }.padding(.horizontal, 24).padding(.vertical, 12)
         }
         .background(Color(nsColor: .windowBackgroundColor))
+        .task { await model.restoreProject() }
+        .task(id: "\(scenePhase)-\(model.project)-\(model.shouldPoll)-\(model.busy)") {
+            if scenePhase == .active && model.shouldPoll && !model.busy { await model.poll() }
+        }
         .sheet(isPresented: $model.showSetup) { SetupView(model: model) }
         .sheet(isPresented: $model.showLogs) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack { Text("Conversion log").font(.title2.bold()); Spacer(); Button("Done") { model.showLogs = false } }
-                ScrollView { Text(model.snapshot?.log ?? "No log yet.").font(.system(.caption, design: .monospaced)).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading) }
+                ScrollView { Text(model.loadingLog ? "Loading log…" : model.logText).font(.system(.caption, design: .monospaced)).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading) }
             }.padding(24).frame(width: 800, height: 550)
         }
         .alert("Could not complete the action", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
             Button("OK") { model.error = nil }
+            Button("Open Diagnostics") { model.openDiagnostics(); model.error = nil }
         } message: { Text(model.error ?? "") }
     }
     private var header: some View {
@@ -78,7 +93,7 @@ struct StudioView: View {
             StudioLogo()
             VStack(alignment: .leading, spacing: 3) {
                 Text("Audiobook Studio").font(.system(.title2, design: .rounded, weight: .bold))
-                Text("A listening library, made from your books.").font(.subheadline).foregroundStyle(.secondary)
+                Text(model.defaultNarration).font(.subheadline).foregroundStyle(.secondary)
             }
             Spacer()
             Button { model.newBook() } label: { Label("New Book", systemImage: "plus") }.disabled(model.busy)
@@ -106,7 +121,12 @@ struct StudioView: View {
     private var narrationControls: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 12) {
-                Picker("Engine", selection: Binding(get: { model.settings.backend }, set: { model.selectEngine($0) })) {
+                Text(model.narrationContext).font(.caption).foregroundStyle(.secondary)
+                if model.audioLocked && model.settings.backend != "qwen" {
+                    Button("New Qwen version of this book") { model.newQwenVersion() }
+                        .disabled(model.settings.source.isEmpty)
+                }
+                Picker(model.audioLocked ? "Recorded engine" : "Engine", selection: Binding(get: { model.settings.backend }, set: { model.selectEngine($0) })) {
                     Text("Qwen3-TTS 1.7B · 6-bit (default)").tag("qwen")
                     Text("Voxtral 4B · 4-bit").tag("voxtral")
                     Text("Kokoro 82M · v1.0").tag("kokoro")
@@ -154,7 +174,7 @@ struct StudioView: View {
                     }.padding(.top, 10)
                 }
                 if model.audioLocked {
-                    Label("Saved audio locks voice and pacing. Use New Book to change them.", systemImage: "lock")
+                    Label("Saved audio keeps its original voice and pacing. A new version uses a separate folder.", systemImage: "lock")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }.padding(8)
@@ -236,7 +256,8 @@ struct StudioView: View {
                 if model.prepared {
                     HStack {
                         Button("Show Folder") { model.reveal() }
-                        Button("View Log") { model.showLogs = true }
+                        Button("View Log") { Task { await model.viewLog() } }
+                        Button("Refresh") { Task { await model.refresh() } }.disabled(model.busy)
                     }.buttonStyle(.borderless)
                 }
             }
@@ -266,7 +287,7 @@ struct StudioView: View {
     }
     private var bookSummary: some View {
         HStack(spacing: 16) {
-            if let path = model.settings.cover, let cover = NSImage(contentsOfFile: path) {
+            if let cover = model.coverImage {
                 Image(nsImage: cover).resizable().scaledToFit().frame(width: 62, height: 84)
                     .clipShape(RoundedRectangle(cornerRadius: 5)).accessibilityHidden(true)
             } else {
@@ -325,6 +346,8 @@ struct SetupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             Text("Local engine setup").font(.title2.bold())
+            Button("Open local diagnostics") { model.openDiagnostics() }
+            Text("Error reports stay on this Mac. No reports are sent to a server.").font(.caption).foregroundStyle(.secondary)
             Text("Kokoro uses the existing Python runtime. Qwen and Voxtral use a separate MLX runtime in this repository.").foregroundStyle(.secondary)
             pathRow("Repository", text: $model.repository, key: "repository")
             pathRow("Python runtime", text: $model.python, key: "python")

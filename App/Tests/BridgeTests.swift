@@ -37,3 +37,20 @@ final class BridgeTests: XCTestCase {
         XCTAssertEqual(response.complete, false)
     }
 }
+
+extension BridgeTests {
+    func testBridgeCapturesProcessExitAndStderr() async throws {
+        let repo = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: repo, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: repo) }
+        try Data("import sys\nsys.stdin.read()\nsys.stderr.write('model-load-failed')\nsys.exit(13)\n".utf8)
+            .write(to: repo.appendingPathComponent("app_bridge.py"))
+        do {
+            _ = try await BridgeClient.call(BridgeRequest(action: "check", project: ""), "/usr/bin/python3", repo.path)
+            XCTFail("Expected bridge failure")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("exit 13"))
+            XCTAssertTrue(error.localizedDescription.contains("model-load-failed"))
+        }
+    }
+}

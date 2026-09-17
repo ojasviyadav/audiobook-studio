@@ -15,4 +15,6 @@ for voice in Heart Bella Michael; do
   fi
 done
 codesign --force --sign - "$bundle"
+# Refresh this bundle only; do not clear system-wide icon caches or restart the Dock.
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$bundle"
 print "Built $bundle"

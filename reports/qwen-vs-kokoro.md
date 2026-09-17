@@ -38,8 +38,8 @@ The successful M4B checks establish valid audio, duration, and chapter structure
 
 ## Local outputs
 
-- Qwen: `/Users/ojasviyadav/Work/ebooks-to-audiobook-conversion/projects/engine-comparison/qwen/qwen-comparison.m4b`
-- Voxtral: `/Users/ojasviyadav/Work/ebooks-to-audiobook-conversion/projects/engine-comparison/voxtral/voxtral-comparison.m4b`
+- Qwen: `~/Work/ebooks-to-audiobook-conversion/projects/engine-comparison/qwen/qwen-comparison.m4b`
+- Voxtral: `~/Work/ebooks-to-audiobook-conversion/projects/engine-comparison/voxtral/voxtral-comparison.m4b`
 
 ## Downloaded model revisions
 

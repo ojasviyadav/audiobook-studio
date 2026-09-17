@@ -22,3 +22,15 @@ vendor/smctemp/*.dSYM/
 .conversion-run.lock
 
 .engine-verification.lock
+
+# Personal inputs, diagnostics, credentials, and runtime artifacts
+.env
+.env.*
+*.log
+*.trace/
+*.sample
+*.safetensors
+*.pth
+*.pt
+*.pem
+*.key

@@ -22,6 +22,8 @@ class AppTests(unittest.TestCase):
             (work/'parallel-1-mps.log').write_text('Worker 1 completed its sections.\n')
             with patch.object(app,'settings',return_value={'output_name':'book.m4b'}), patch.object(app,'state',return_value=({},True,True)), patch.object(app,'progress',return_value={'percent':98.8}):
                 result=app.snapshot(project)
+            self.assertNotIn('log',result)
+            result.update(app.dispatch(dict(action='logs',project=str(project))))
             self.assertIn('Batch 5/7',result['log'])
             self.assertIn('Worker 1 completed',result['log'])
             self.assertIn('earlier runs',result['log'])

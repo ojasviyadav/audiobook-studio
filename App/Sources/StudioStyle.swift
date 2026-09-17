@@ -22,12 +22,17 @@ struct StudioCardStyle: GroupBoxStyle {
     }
 }
 
+@MainActor
+enum StudioAssets {
+    static let icon: NSImage? = Bundle.main.url(forResource: "AppIcon", withExtension: "png")
+        .flatMap { NSImage(contentsOf: $0) }
+}
+
 struct StudioLogo: View {
     var size: CGFloat = 52
     var body: some View {
         Group {
-            if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "png"),
-               let icon = NSImage(contentsOf: url) {
+            if let icon = StudioAssets.icon {
                 Image(nsImage: icon).resizable().interpolation(.high).scaledToFit()
             } else {
                 Image(systemName: "book.closed.fill").resizable().scaledToFit()

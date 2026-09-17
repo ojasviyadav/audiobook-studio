@@ -20,3 +20,11 @@ Offscreen layouts were inspected in light and dark appearances. Live window inte
 ## Qwen speed update
 
 Build 5 sets the default Qwen speed to 1.25× in the app, engine selection, Python settings, and command-line preparation. Explicit saved speeds remain valid. The 16 Python tests, Swift bridge test, release build, and strict signature check passed. The 30-second sample passed duration and audio-decoding checks. It uses the earlier Ryan recording with the app’s pitch-preserving speed change. See [the sample record](../reports/qwen-1.25x-sample.json).
+
+## App clarity and task handling update
+
+Version 1.3, build 6 adds saved-engine labels, a separate Qwen-version draft, local diagnostic reports, and guards against stale asynchronous results. The normal status response no longer reads conversion logs. Completed projects do not poll. See [the app review](app-review.md) for measurements and scope.
+
+Final checks for build 6: 10 Swift tests, 16 base Python tests, 6 MLX tests, and the simulated process-group guard check passed. The release build and strict signature check passed. The new-book layout was rendered from SwiftUI source and inspected. The app was reopened after confirming that narration was complete. The native control service could open Finder and Activity Monitor but returned “native pipe closed before response” for the Audiobook Studio window, so live control testing remains limited.
+
+The app now sets its running Dock icon from the bundled PNG. The build also registers the bundle with Launch Services, and the Info.plist names the ICNS file explicitly. No global icon cache was deleted.

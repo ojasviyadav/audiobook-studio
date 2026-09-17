@@ -76,11 +76,6 @@ struct BridgeRequest: Encodable, Sendable {
     var project: String
     var config: BookSettings?
 }
-enum BridgeError: LocalizedError {
-    case message(String)
-    var errorDescription: String? { if case let .message(text) = self { return text }; return nil }
-}
-
 @MainActor
 final class StudioModel: ObservableObject {
     @Published var settings = BookSettings()
@@ -96,32 +91,67 @@ final class StudioModel: ObservableObject {
     @Published var showLogs = false
     @Published var showSetup = false
     @Published var previewing = false
+    @Published var diagnosticsID: String?
+    @Published var coverImage: NSImage?
+    @Published var logText = ""
+    @Published var loadingLog = false
     private var player: AVAudioPlayer?
-    private var polling: Task<Void, Never>?
+    private let bridge: BridgeOperation
+    private let monitoring: any ErrorMonitoringService
+    private var refreshing = false
+    private var restored = false
+    private var statusFailures = 0
+    private var playbackTask: Task<Void, Never>?
+    private var coverTask: Task<Void, Never>?
     private var generation = UUID()
 
-    init() {
+    init(bridge: @escaping BridgeOperation = BridgeClient.call,
+         monitoring: any ErrorMonitoringService = LocalErrorMonitoring.shared) {
+        self.bridge = bridge
+        self.monitoring = monitoring
         let home = FileManager.default.homeDirectoryForCurrentUser
         let fallback = home.appendingPathComponent("Work/ebooks-to-audiobook-conversion").path
         let bundleParent = Bundle.main.bundleURL.deletingLastPathComponent().path
         let detected = FileManager.default.fileExists(atPath: bundleParent + "/app_bridge.py") ? bundleParent : fallback
         repository = UserDefaults.standard.string(forKey: "repository") ?? detected
-        python = UserDefaults.standard.string(forKey: "python") ?? home.appendingPathComponent("Work/Audiobooks/.kokoro-venv/bin/python").path
+        let localPython = repository + "/.venv/bin/python"
+        let legacyPython = home.appendingPathComponent("Work/Audiobooks/.kokoro-venv/bin/python").path
+        let detectedPython = FileManager.default.isExecutableFile(atPath: localPython) ? localPython :
+            (FileManager.default.isExecutableFile(atPath: legacyPython) ? legacyPython : "/usr/bin/python3")
+        python = UserDefaults.standard.string(forKey: "python") ?? detectedPython
         outputFolder = UserDefaults.standard.string(forKey: "outputFolder") ?? home.appendingPathComponent("Work/Audiobooks").path
         settings.modelDir = UserDefaults.standard.string(forKey: "modelDir") ?? home.appendingPathComponent("Work/Audiobooks/kokoro-model").path
-        settings.sensorDir = UserDefaults.standard.string(forKey: "sensorDir") ?? home.appendingPathComponent("Work/Audiobooks/tools/smctemp").path
-        let last = UserDefaults.standard.string(forKey: "project") ?? home.appendingPathComponent("Work/Audiobooks/Emotional Design").path
-        if FileManager.default.fileExists(atPath: last + "/book.json") {
+        let localSensors = repository + "/vendor/smctemp"
+        settings.sensorDir = UserDefaults.standard.string(forKey: "sensorDir") ??
+            (FileManager.default.isExecutableFile(atPath: localSensors + "/read_sensors") ? localSensors : home.appendingPathComponent("Work/Audiobooks/tools/smctemp").path)
+        if let last = UserDefaults.standard.string(forKey: "project"), FileManager.default.fileExists(atPath: last + "/book.json") {
             project = last
-            Task { await loadProject() }
         }
-        polling = Task { [weak self] in
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(2))
-                guard let self else { return }
-                if self.prepared && !self.busy { await self.refresh() }
-            }
+    }
+
+    func restoreProject() async {
+        guard !restored else { return }
+        restored = true
+        if !project.isEmpty { await loadProject() }
+    }
+
+    // SwiftUI owns this task. It cancels when the window becomes inactive or changes project.
+    func poll() async {
+        while !Task.isCancelled && prepared && !complete {
+            do { try await Task.sleep(for: .seconds(statusFailures > 0 ? 15 : 2), tolerance: .milliseconds(250)) }
+            catch { return }
+            guard !Task.isCancelled else { return }
+            if !busy { await refresh() }
         }
+    }
+
+    var shouldPoll: Bool { prepared && !complete }
+    var defaultNarration: String { "New books: Qwen · Ryan · 1.25×" }
+    var narrationContext: String {
+        if audioLocked {
+            return "Saved recording: \(voiceLabel(settings.voice)) · \(settings.backend.capitalized) · \(String(format: "%.2f", settings.speed))×. Changing the default does not change saved audio."
+        }
+        return "Settings for the next recording. Qwen is the default for new books."
     }
 
     var active: Bool { snapshot?.active == true }
@@ -148,8 +178,8 @@ final class StudioModel: ObservableObject {
         ["af_heart":"Heart", "af_bella":"Bella", "am_michael":"Michael"][voice] ?? voice.replacingOccurrences(of: "_", with: " ").capitalized
     }
     func selectEngine(_ engine: String) {
-        guard !audioLocked else { return }
-        player?.stop(); previewing = false
+        guard !busy && !audioLocked else { return }
+        stopPlayback()
         settings.backend = engine
         settings.voice = engine == "qwen" ? "Ryan" : (engine == "voxtral" ? "neutral_male" : "af_heart")
         settings.speed = engine == "qwen" ? 1.25 : (engine == "kokoro" ? 0.95 : 1)
@@ -180,98 +210,156 @@ final class StudioModel: ObservableObject {
     }
 
     private func call(_ action: String, config: BookSettings? = nil) async throws -> BridgeResponse {
-        let encoder = JSONEncoder(); encoder.keyEncodingStrategy = .convertToSnakeCase
-        let input = try encoder.encode(BridgeRequest(action: action, project: project, config: config))
+        // Capture every input before suspension. Never read paths from a later project.
+        let request = BridgeRequest(action: action, project: project, config: config)
         let executable = python, repo = repository
-        let data = try await Task.detached(priority: .utility) {
-            guard FileManager.default.isExecutableFile(atPath: executable) else {
-                throw BridgeError.message("Select the Python runtime in Setup.")
-            }
-            guard FileManager.default.fileExists(atPath: repo + "/app_bridge.py") else {
-                throw BridgeError.message("Select the conversion repository in Setup.")
-            }
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = [repo + "/app_bridge.py"]
-            process.currentDirectoryURL = URL(fileURLWithPath: repo)
-            var environment = ProcessInfo.processInfo.environment
-            environment["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-            environment["OMP_NUM_THREADS"] = "1"
-            process.environment = environment
-            let stdin = Pipe(), output = Pipe()
-            process.standardInput = stdin; process.standardOutput = output; process.standardError = FileHandle.nullDevice
-            try process.run()
-            try stdin.fileHandleForWriting.write(contentsOf: input)
-            try stdin.fileHandleForWriting.close()
-            let data = output.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            guard !data.isEmpty else { throw BridgeError.message("The conversion engine did not reply. Check the runtime in Setup.") }
-            return data
-        }.value
-        let decoder = JSONDecoder(); decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let response = try decoder.decode(BridgeResponse.self, from: data)
-        if !response.ok { throw BridgeError.message(response.error ?? "The operation failed.") }
-        return response
+        return try await bridge(request, executable, repo)
+    }
+
+    private func report(_ failure: Error, action: String, token: UUID, statusOnly: Bool = false) async {
+        guard !(failure is CancellationError), generation == token, !Task.isCancelled else { return }
+        let id = UUID().uuidString.prefix(8).uppercased()
+        await monitoring.captureError(failure, context: ErrorContext(id: id, action: action, engine: settings.backend))
+        guard generation == token, !Task.isCancelled else { return }
+        diagnosticsID = id
+        let message = UserFacingFailure.message(for: action) + " Report: " + id + "."
+        if statusOnly { notice = message } else { error = message }
     }
 
     func refresh() async {
+        guard prepared, !busy, !refreshing else { return }
+        refreshing = true
         let token = generation
+        defer { refreshing = false }
         do {
             let response = try await call("status")
-            guard generation == token else { return }
+            guard generation == token, !Task.isCancelled else { return }
             snapshot = response
-        } catch { if generation == token { notice = "Status unavailable: \(error.localizedDescription)" } }
-    }
-    func loadProject() async {
-        generation = UUID(); let token = generation
-        busy = true
-        defer { busy = false }
-        do {
-            let response = try await call("load")
-            guard generation == token else { return }
-            snapshot = response; settings = response.config ?? settings; prepared = true
-            UserDefaults.standard.set(project, forKey: "project")
-            notice = "Completed batches are saved automatically."
-        } catch { self.error = error.localizedDescription; prepared = false }
-    }
-    func perform(_ action: String) {
-        guard !busy else { return }
-        generation = UUID()
-        busy = true
-        Task {
-            defer { busy = false }
-            do {
-                persistPaths()
-                if action == "prepare" {
-                    let response = try await call("prepare", config: settings)
-                    snapshot = response; settings = response.config ?? settings; prepared = true
-                    UserDefaults.standard.set(project, forKey: "project")
-                    snapshot = try await call("start")
-                    notice = "Conversion started. You can close this window; the job continues."
-                } else if ["check", "install", "download", "preview"].contains(action) {
-                    notice = ["install":"Installing the MLX runtime…", "download":"Downloading the selected model. This can take several minutes…", "preview":"Making a short sample under temperature control…"][action] ?? "Checking setup…"
-                    let response = try await call(action, config: settings)
-                    notice = response.message ?? "Setup is ready."
-                    if let path = response.preview { try playSample(URL(fileURLWithPath: path)) }
-                } else {
-                    if action == "resume" { _ = try await call("save", config: settings) }
-                    let response = try await call(action, config: action == "save" ? settings : nil)
-                    snapshot = response
-                    if action == "save" { settings = response.config ?? settings; notice = "Settings saved." }
-                    if action == "pause" { notice = "Paused. Resume continues from saved batches." }
-                    if action == "stop" { notice = "Stopping. Saved audio will be kept." }
-                }
-            } catch { self.error = error.localizedDescription }
+            if statusFailures > 0 { notice = "Status updated." }
+            statusFailures = 0
+        } catch {
+            guard generation == token, !(error is CancellationError), !Task.isCancelled else { return }
+            statusFailures += 1
+            if statusFailures == 1 { await report(error, action: "status", token: token, statusOnly: true) }
         }
     }
+
+    func loadProject() async {
+        guard !busy else { return }
+        generation = UUID(); let token = generation
+        stopPlayback(); coverTask?.cancel(); coverImage = nil
+        snapshot = nil; prepared = false; logText = ""
+        busy = true
+        defer { if generation == token { busy = false } }
+        do {
+            let response = try await call("load")
+            guard generation == token, !Task.isCancelled else { return }
+            snapshot = response; settings = response.config ?? settings; prepared = true
+            statusFailures = 0; error = nil; diagnosticsID = nil
+            loadCover()
+            UserDefaults.standard.set(project, forKey: "project")
+            notice = audioLocked ? "Saved recording loaded. New books use Qwen, Ryan, at 1.25×." : "Project loaded."
+        } catch {
+            guard generation == token else { return }
+            prepared = false
+            await report(error, action: "load", token: token)
+        }
+    }
+
+    func perform(_ action: String) {
+        guard !busy else { return }
+        generation = UUID(); let token = generation
+        busy = true; error = nil
+        Task { await execute(action, token: token) }
+    }
+
+    private func execute(_ action: String, token: UUID) async {
+        defer { if generation == token { busy = false } }
+        await monitoring.addBreadcrumb(Breadcrumb(action: action))
+        do {
+            persistPaths()
+            if action == "prepare" {
+                let response = try await call("prepare", config: settings)
+                guard generation == token else { return }
+                snapshot = response; settings = response.config ?? settings; prepared = true
+                loadCover()
+                UserDefaults.standard.set(project, forKey: "project")
+                let started = try await call("start")
+                guard generation == token else { return }
+                snapshot = started
+                notice = "Conversion started. You can close this window; the job continues."
+            } else if ["check", "install", "download", "preview"].contains(action) {
+                notice = ["install":"Installing the MLX runtime…", "download":"Downloading the selected model…", "preview":"Making a sample under temperature control…"][action] ?? "Checking setup…"
+                let response = try await call(action, config: settings)
+                guard generation == token else { return }
+                notice = response.message ?? "Setup is ready."
+                if let path = response.preview { try playSample(URL(fileURLWithPath: path)) }
+            } else {
+                if action == "resume" {
+                    _ = try await call("save", config: settings)
+                    guard generation == token else { return }
+                }
+                let response = try await call(action, config: action == "save" ? settings : nil)
+                guard generation == token else { return }
+                snapshot = response
+                if action == "save" { settings = response.config ?? settings; notice = "Settings saved." }
+                if action == "pause" { notice = "Paused. Resume continues from saved batches." }
+                if action == "stop" { notice = "Stopping. Saved audio will be kept." }
+            }
+        } catch { await report(error, action: action, token: token) }
+    }
+
     func newBook() {
-        generation = UUID()
+        guard !busy else { return }
+        generation = UUID(); stopPlayback(); coverTask?.cancel()
         let model = settings.modelDir, sensor = settings.sensorDir
         settings = BookSettings(); settings.modelDir = model; settings.sensorDir = sensor
-        snapshot = nil; prepared = false; project = ""
-        notice = "Select an EPUB and an output folder."
+        snapshot = nil; prepared = false; project = ""; coverImage = nil
+        error = nil; diagnosticsID = nil; logText = ""; statusFailures = 0
+        UserDefaults.standard.removeObject(forKey: "project")
+        notice = "Qwen · Ryan · 1.25×. Select an EPUB and an output folder."
     }
+
+    func newQwenVersion() {
+        guard !busy, !settings.source.isEmpty else { return }
+        let previous = settings
+        newBook()
+        settings.source = previous.source; settings.title = previous.title; settings.author = previous.author
+        settings.cover = previous.cover
+        // Each version gets its own output. Existing audio and receipts are never relabelled.
+        updateProjectPath()
+        project += " — " + String(UUID().uuidString.prefix(8))
+        loadCover()
+        notice = "New Qwen version at 1.25×. The saved recording is kept. Select Prepare and Start when ready."
+    }
+
+    private func loadCover() {
+        coverTask?.cancel(); coverImage = nil
+        guard let path = settings.cover else { return }
+        let token = generation
+        coverTask = Task { [weak self] in
+            let data = await Task.detached(priority: .utility) { try? Data(contentsOf: URL(fileURLWithPath: path)) }.value
+            guard !Task.isCancelled, let self, self.generation == token else { return }
+            self.coverImage = data.flatMap(NSImage.init(data:))
+        }
+    }
+
+    func viewLog() async {
+        guard !loadingLog else { return }
+        showLogs = true; loadingLog = true
+        let token = generation
+        defer { loadingLog = false }
+        do {
+            let response = try await call("logs")
+            guard generation == token, !Task.isCancelled else { return }
+            logText = response.log ?? "No log yet."
+        } catch { await report(error, action: "logs", token: token) }
+    }
+
+    func openDiagnostics() { NSWorkspace.shared.open(LocalErrorMonitoring.directory) }
+
     func chooseSource() {
+        guard !busy && !prepared else { return }
         let panel = NSOpenPanel(); panel.title = "Select an EPUB file or unpacked EPUB folder"
         panel.canChooseFiles = true; panel.canChooseDirectories = true; panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url {
@@ -280,11 +368,19 @@ final class StudioModel: ObservableObject {
         }
     }
     func chooseExisting() {
+        guard !busy else { return }
         let panel = NSOpenPanel(); panel.title = "Open a conversion project"
         panel.canChooseFiles = false; panel.canChooseDirectories = true
-        if panel.runModal() == .OK, let url = panel.url { project = url.path; Task { await loadProject() } }
+        if panel.runModal() == .OK, let url = panel.url { Task { await openProject(url.path) } }
     }
+    func openProject(_ path: String) async {
+        guard !busy else { return }
+        project = path
+        await loadProject()
+    }
+
     func chooseFolder(_ field: String) {
+        guard !busy else { return }
         let panel = NSOpenPanel(); panel.canChooseDirectories = true; panel.canChooseFiles = field == "python"
         panel.title = "Select \(field)"
         if panel.runModal() == .OK, let url = panel.url {
@@ -295,7 +391,7 @@ final class StudioModel: ObservableObject {
             case "sensors": settings.sensorDir = url.path
             default:
                 outputFolder = url.path
-                if !settings.source.isEmpty { updateProjectPath() }
+                if !prepared && !settings.source.isEmpty { updateProjectPath() }
             }
             persistPaths()
         }
@@ -309,20 +405,32 @@ final class StudioModel: ObservableObject {
         NSWorkspace.shared.open([URL(fileURLWithPath: path)], withApplicationAt: URL(fileURLWithPath: "/System/Applications/Books.app"), configuration: NSWorkspace.OpenConfiguration())
     }
     func previewVoice() {
-        if previewing { player?.stop(); previewing = false; return }
+        guard !busy else { return }
+        if previewing { stopPlayback(); return }
         if settings.backend != "kokoro" { perform("preview"); return }
         let name = ["af_heart": "Heart", "af_bella": "Bella", "am_michael": "Michael"][settings.voice] ?? "Heart"
         guard let url = Bundle.main.url(forResource: name, withExtension: "mp3", subdirectory: "Voice Samples") else {
             error = "The voice sample is not included in this app build."; return
         }
-        do { try playSample(url) } catch { self.error = error.localizedDescription }
+        do { try playSample(url) } catch {
+            let token = generation
+            Task { await report(error, action: "preview", token: token) }
+        }
     }
+    private func stopPlayback() {
+        playbackTask?.cancel(); player?.stop(); player = nil; previewing = false
+    }
+
     private func playSample(_ url: URL) throws {
-            player = try AVAudioPlayer(contentsOf: url); player?.play(); previewing = true
-            let duration = player?.duration ?? 0
-            Task { [weak self] in
-                try? await Task.sleep(for: .seconds(duration))
-                if self?.player?.isPlaying == false { self?.previewing = false }
-            }
+        stopPlayback()
+        player = try AVAudioPlayer(contentsOf: url)
+        guard player?.play() == true else { throw BridgeError.message("Audio playback failed.") }
+        previewing = true
+        let duration = player?.duration ?? 0
+        playbackTask = Task { [weak self] in
+            do { try await Task.sleep(for: .seconds(duration)) } catch { return }
+            guard !Task.isCancelled else { return }
+            self?.previewing = false
+        }
     }
 }

@@ -71,6 +71,10 @@ def snapshot(project):
     if active and p['percent']>=100:phase='Assembling and checking audio'
     job=read(project/'app-run.json')
     if not active and not complete and not paused and job.get('exit_code') not in (None,0):phase='Stopped after an error'
+    return dict(config=config,progress=p,thermal=thermal,active=active,legacy=legacy,
+                paused=paused,complete=complete,phase=phase,output=done.get('output',str(project/config['output_name'])))
+
+def read_logs(project):
     log=''
     logs=[(f'GPU worker {i}: latest recorded output',project/f'kokoro-heart-build/parallel-{i}-mps.log') for i in range(2)]
     logs += [('App job history',project/'app-job.log'),
@@ -80,8 +84,7 @@ def snapshot(project):
             with file.open('rb') as stream:
                 stream.seek(max(0,file.stat().st_size-4500))
                 log+=label+'\n'+stream.read().decode('utf-8',errors='replace').replace('\0','')+'\n\n'
-    return dict(config=config,progress=p,thermal=thermal,active=active,legacy=legacy,
-                paused=paused,complete=complete,phase=phase,output=done.get('output',str(project/config['output_name'])),log=log)
+    return log
 
 def check(config):
     problems=[]
@@ -108,6 +111,7 @@ def check(config):
 
 def dispatch(request):
     action=request['action'];project=Path(request.get('project') or '.').expanduser().resolve()
+    if action=='logs': return dict(log=read_logs(project))
     if action=='check':return dict(message=check(validate(request['config'])))
     if action in ('install','download'):
         config=validate(request['config'])

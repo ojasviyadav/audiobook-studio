@@ -1,135 +1,177 @@
-# EPUB to audiobook conversion
+<p align="center">
+  <img src="App/Resources/AppIcon.png" width="104" alt="Audiobook Studio icon">
+</p>
 
-Convert a local, readable EPUB to a chaptered M4B audiobook with Qwen, Voxtral, or Kokoro. Apple Books can import the result.
+<h1 align="center">Audiobook Studio</h1>
+<p align="center"><strong>Your ebooks. Your narrator. Your Mac.</strong></p>
+<p align="center">Turn an EPUB into a chaptered audiobook with a native Swift app and local speech models.</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Apple%20Silicon-171717" alt="Apple Silicon">
+  <img src="https://img.shields.io/badge/interface-SwiftUI-ED7647" alt="SwiftUI">
+  <img src="https://img.shields.io/badge/default-Qwen%20%2B%20Ryan-56B6AD" alt="Qwen and Ryan by default">
+  <img src="https://img.shields.io/badge/output-chaptered%20M4B-347D77" alt="Chaptered M4B output">
+</p>
 
-This repository was made for Emotional Design on a MacBook Pro with an M4 Pro, 14 CPU cores, 20 GPU cores, and 48 GB of memory. See [the performance report](reports/cpu-gpu-performance.md) for measured results and limits.
+<p align="center">
+  <a href="#get-started">Get started</a> ·
+  <a href="#choose-your-narrator">Narrators</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#development">Development</a>
+</p>
 
-## Swift app
+![Audiobook Studio with Qwen, Ryan, and 1.25× selected](docs/images/studio.png)
 
-Open **Audiobook Studio.app** in this folder. New books default to **Qwen3-TTS 1.7B CustomVoice 6-bit**, **Ryan**, and **1.25× speed**. Existing projects keep their saved engine and speed. Codex does not need to be open for conversion.
+*App layout rendered from the SwiftUI source. No ebook or recording is included.*
 
-1. Select **New Book**, then select an EPUB file or an unpacked EPUB folder.
-2. Select the output folder. The app makes a project folder with the EPUB name. Use **Open Project** to resume an existing project.
-3. Select the engine, preset voice, speed, audio quality, silence, and cooling controls. Qwen also accepts narration style instructions.
-4. Select **Prepare and Start**. The app shows saved progress, an estimated time, CPU and GPU temperatures, and section progress.
-5. Use **Pause**, **Resume**, or **Stop** as needed. Completed audio batches are kept. A stop can discard the current incomplete batch. Closing the app does not stop an active conversion. After a Mac restart, open the project and select **Resume**.
-6. When conversion and checks are complete, select **Open in Apple Books**.
+## A small studio for long books
 
-GPU settings are fixed at two Metal workers. Kokoro uses two host threads per worker; MLX manages its own execution. CPU inference is disabled. Only one book can run through the app at a time. The app will not start a duplicate of the current Emotional Design run.
+Choose a book, select a preset voice, and start. Audiobook Studio saves finished speech batches as it works. You can pause, resume, or close the app while a conversion continues. The finished M4B includes chapter markers and a cover when the EPUB provides one.
 
-Qwen offers Ryan and Aiden. Voxtral 4B 4-bit offers 20 preset voices, including five English voices. Kokoro offers Heart, Bella, and Michael. No reference audio is needed. **Make sample** creates a short test audiobook under temperature control and plays it. Samples wait until no other book is running. Kokoro uses its existing listening samples.
+- **Local narration.** Qwen and Voxtral run through MLX-Audio. Kokoro uses PyTorch with Metal. Model downloads need the internet; narration runs on your Mac.
+- **Qwen by default.** New books start with Qwen3-TTS 1.7B CustomVoice 6-bit, Ryan, at 1.25×. No voice cloning or reference recording is required.
+- **Keep finished work.** Saved batches carry text and audio-setting signatures. Resume reuses matching audio. A new voice version gets a separate project folder.
+- **Control the pace.** Set speed, audio quality, silence, chunk size, voice variation, style instructions, and cooling breaks.
+- **Watch the heat.** Separate CPU and GPU readings control both workers. Missing readings pause processing.
+- **Useful errors.** Short recovery messages link to local diagnostic reports. Reports are not sent to a server.
 
-The controls include speed (0.5–2×), AAC quality (64–192 kbps), silence between speech segments and after chapters, and rest after each generated segment. Qwen and Voxtral speed uses FFmpeg to change the generated audio while keeping its pitch. **Chunk size and generation** sets a 500–1,500 character limit, voice variation, and the maximum output tokens. Paragraphs stay together where they fit. Long paragraphs split at sentence or word boundaries. All results from each model generator are saved. Reaching the token limit stops the job to prevent silent truncation.
+**Current scope:** a source-built macOS app, tested on an M4 Pro with 48 GB of memory. It is not a notarized, standalone download. The repository, Python environments, model files, FFmpeg, and temperature reader remain part of the installation. Other Apple Silicon models need sensor validation.
 
-The temperature controls have separate CPU and GPU targets, pause temperatures, and resume temperatures. The maximum CPU target is 90°C. The maximum GPU target is 93°C, as permitted on 17 September 2026. Qwen projects pause for CPU heat at 82°C and resume below 78°C. Their GPU defaults are pause at 89°C and resume below 85°C. Voxtral uses shorter work periods after a local test exceeded the temperature target: CPU pause/resume 82°C/78°C, GPU 89°C/85°C, 3 seconds of work, at least 10 seconds of rest, and 1 second of stable cool readings. Selecting an engine sets its cooling defaults; all cooling controls remain adjustable. Either sensor group can pause all workers. Both groups must cool before work resumes. Each pause must be at least 2°C below its target. Work time, minimum rest time, and time for stable cool readings remain adjustable. Existing CPU settings stay unchanged.
+## Choose your narrator
 
-Use **Apply settings** to save changes. Resume also saves the current settings. Engine, voice, style, chunk size, generation options, speed, silence, and audio quality are locked after audio is saved, to keep the book consistent. Use a new project folder to change them. Temperature settings can change during a run started by the app.
+| Engine | Preset voices | Best reason to choose it | Model license |
+|---|---|---|---|
+| **Qwen3-TTS 1.7B CustomVoice · 6-bit** | Ryan, Aiden | Default narrator; accepts style instructions | Apache-2.0 |
+| **Voxtral 4B TTS · 4-bit** | 20 presets, including five English voices | More voice choices | CC-BY-NC-4.0 |
+| **Kokoro 82M · v1.0** | Heart, Bella, Michael | Smaller model; faster in the local comparison | Apache-2.0 |
 
-The first Emotional Design run is complete. Its last section and final assembly ran through the app after a narrow text-check correction. Earlier legacy runs keep their fixed thermal controls until they stop and resume through the app.
+Qwen and Voxtral use pitch-preserving audio processing for speed changes. A value of **1.25×** makes the saved audio faster; it is separate from a player's playback-speed control.
 
-**Setup** contains the repository, Kokoro Python, Kokoro model, and temperature reader paths. Qwen and Voxtral use `.venv-mlx` and the `models/qwen` and `models/voxtral` folders in this repository. **Install MLX Runtime**, **Download Selected Model**, and **Check Setup** prepare the selected engine. Downloads need an internet connection. Large files are saved in 1 MB parts and checked against the model repository’s SHA-256 digest before use. A retry reuses completed parts. Narration runs locally after download. Setup errors are recorded in `models/setup.log`. Keep the runtime and model folders on disk. The app itself is local and signed for this Mac; it is not a standalone distribution for other computers.
+The model IDs and adapter details are in [Engine notes](docs/engines.md). Model weights are downloaded separately from [Hugging Face](https://huggingface.co/mlx-community).
 
-### Build and checks
+### Why does an old project still show Kokoro?
+
+The engine label describes the **saved recording**. Changing the app default does not regenerate old audio. Use **New Qwen version of this book** to prepare a separate Qwen recording with the same source. The original audiobook stays intact.
+
+## Get started
+
+You need an Apple Silicon Mac, Xcode command-line tools with Swift 6, Python 3.11, and FFmpeg. The Swift interface targets macOS 14 or later; the MLX runtime also needs a compatible macOS version. This release was tested on the author's M4 Pro, not across all supported OS versions.
+
+### 1. Clone and prepare the local tools
 
 ```sh
-zsh App/build-app.sh
-swift test -j 1
-python3 -m unittest discover -s tests
-python3 scripts/check_parallel_guard.py
-.venv-mlx/bin/python -m unittest discover -s tests/mlx
-```
+git clone https://github.com/ojasviyadav/audiobook-studio.git
+cd audiobook-studio
 
-The source is in `App/Sources`. `app_bridge.py` connects the Swift app to the conversion engine. `scripts/app_job.py` keeps the job running after the app closes. Tests check Swift/Python data exchange, saved-audio locks, duplicate-job rejection, temperature limits, and group pause/resume/stop. The process tests use sleeping test workers; they do not run model inference. The build and tests passed. See [the verification record](docs/verification.md). Offscreen layouts were inspected in light and dark appearances. Live window checks could not run because the computer-control service returned “native pipe closed before response.”
-
-## Operation
-
-- Two workers use the Metal GPU. CPU inference is disabled. A worker with no assigned section is not loaded. The CPU prepares text and writes audio.
-- Workers own different sections. A saved section is not generated again.
-- Each audio batch has a text signature and a record of the voice, speed, sample count, and processing device.
-- One temperature monitor controls the full process group, including audio encoding.
-- The completed original Kokoro run used a shared 90°C target and 86°C/82°C controls. The updated monitor uses separate CPU and GPU controls as described above.
-- A missing temperature reading pauses processing. A failed monitor stops its workers.
-- Final checks verify section order, chapter markers, duration, and audio decoding. Chunks cover all input text. Kokoro also reports the text it processed. Qwen and Voxtral do not prove that every input word was spoken correctly; listen to samples and check the result.
-
-The temperature limit is a target, not a hardware guarantee. Other apps and GPU work already in progress can raise the temperature after a pause. Sensor names are not a public Apple interface. This sensor configuration has only been checked on the current M4 Pro.
-
-## Setup
-
-Use Python 3.11, FFmpeg, and the Xcode command line tools. Make a virtual environment and install the recorded dependencies:
-
-```sh
+# With Homebrew already installed:
+brew install python@3.11 ffmpeg
 python3.11 -m venv .venv
-.venv/bin/pip install -r requirements-lock.txt
+
+# Build the temperature reader.
 make -C vendor/smctemp -j1
-cd vendor/smctemp
-c++ -std=c++17 -DARCH_TYPE_ARM64 -framework IOKit -o read_sensors read_sensors.cc smctemp.o smctemp_string.o
-cd ../..
+c++ -std=c++17 -DARCH_TYPE_ARM64 -framework IOKit \
+  -o vendor/smctemp/read_sensors \
+  vendor/smctemp/read_sensors.cc \
+  vendor/smctemp/smctemp.o vendor/smctemp/smctemp_string.o
+
+zsh App/build-app.sh
+open "Audiobook Studio.app"
 ```
 
-The current Mac already has a working environment at `/Users/ojasviyadav/Work/Audiobooks/.kokoro-venv` and model files at `/Users/ojasviyadav/Work/Audiobooks/kokoro-model`. These large files are outside this repository.
+The bundled sensor keys were checked on an **M4 Pro**. Do not assume they cover another chip. The guard requires valid CPU and GPU readings before narration can run.
 
-For Qwen and Voxtral, the app setup buttons perform the equivalent of:
+### 2. Set up Qwen
+
+In **Setup**, check the repository and Python runtime paths. For a new clone, use `.venv/bin/python` and `vendor/smctemp` as the temperature-reader folder.
+
+Select **Install MLX Runtime**, then **Download Selected Model**, then **Check Setup**. The app creates `.venv-mlx` and stores the model in `models/qwen`. The Qwen checkpoint is about 2.7 GB; allow additional space for the runtime and generated audio.
+
+For Kokoro, install `requirements-lock.txt` in `.venv`, install the `en_core_web_sm` spaCy model, and supply the Kokoro model files. See [local setup details](docs/local-usage.md#setup).
+
+### 3. Make your audiobook
+
+1. Select **New Book** and choose a readable EPUB or unpacked EPUB folder.
+2. Choose the output folder. Qwen, Ryan, and 1.25× are already selected.
+3. Use **Make sample** to check the voice and pace.
+4. Select **Prepare and Start**. Watch saved progress, temperatures, and the time estimate.
+5. When complete, select **Open in Apple Books**.
+
+Saved voice and pacing settings are locked after audio is generated. Cooling settings remain adjustable. After a Mac restart, open the project and select **Resume**.
+
+## Controls without guesswork
+
+| Control | Available settings |
+|---|---|
+| Speed | 0.5×–2× |
+| AAC quality | 64, 96, 128, or 192 kbps |
+| Qwen narration style | Plain-language voice instructions |
+| MLX chunk limit | 500–1,500 characters |
+| Generation | Voice variation and token limit |
+| Silence | Between speech segments and at chapter ends |
+| Cooling | Separate CPU/GPU targets, pause/resume thresholds, work/rest periods |
+| GPU configuration | Fixed at two Metal workers; CPU inference off |
+
+Both workers share the Mac's GPU cores. They process separate sections; they are not separate physical GPUs. Only one book can run through the app at a time.
+
+**Temperature targets are not hardware limits.** Work already queued on the GPU and other applications can raise temperatures after narration pauses. The maximum adjustable targets are 90°C for CPU and 93°C for GPU. The pause points stay below those targets. See [measured performance and limits](reports/qwen-vs-kokoro.md).
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[EPUB] --> B[Extract sections and text]
+    B --> C[Split speech batches]
+    C --> D[Two guarded GPU workers]
+    D --> E[Saved audio and receipts]
+    E --> F[Assemble chapters]
+    F --> G[Check audio]
+    G --> H[M4B audiobook]
+```
+
+The Swift app sends JSON commands to a Python bridge. A separate job process owns narration, so closing the window does not end an active conversion. A temperature supervisor controls the worker process group, including audio encoding.
+
+Final checks cover section order, chapter markers, duration, and audio decoding. The pipeline rejects empty or token-limited model output. These checks do **not** prove perfect pronunciation or that a model spoke every word correctly.
+
+<details>
+<summary><strong>Project layout</strong></summary>
+
+```text
+App/Sources/          SwiftUI interface, task state, bridge, local diagnostics
+App/Tests/            Swift tests and controlled task-order checks
+app_bridge.py         JSON command interface
+convert.py            EPUB preparation and conversion entry point
+scripts/              Model adapters, workers, temperature guard, validation
+vendor/smctemp/        Temperature-reader source and its license
+tests/                Python pipeline and MLX adapter tests
+docs/                 Setup, engine, and verification notes
+reports/              Development measurements and their limits
+```
+
+Each conversion gets its own project folder with `book.json`, extracted sections, audio receipts, logs, and the finished M4B. The internal `kokoro-heart-build` folder name is retained for compatibility; `book.json` selects the actual engine.
+
+</details>
+
+## Listen on iPhone
+
+Opening an M4B in Books on the Mac imports it into that Mac's library. For iPhone transfer, select the device in Finder, open **Audiobooks**, select the title, and apply the sync settings. Finder supports Wi-Fi sync after it has been configured. See [Apple's Finder sync guide](https://support.apple.com/en-gb/102471).
+
+## Development
 
 ```sh
-python3 -m venv .venv-mlx
-.venv-mlx/bin/python -m pip install -r requirements-mlx.txt
-.venv-mlx/bin/python scripts/download_models.py qwen voxtral
+swift test -j 2
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/check_parallel_guard.py
+.venv-mlx/bin/python -m unittest discover -s tests/mlx -v
+zsh App/build-app.sh
 ```
 
-The installed package versions are recorded in `requirements-mlx-lock.txt`. See [engine details](docs/engines.md) for model IDs, voices, and licenses.
+The app uses Swift 6 concurrency checks. Tests cover stale replies after project changes, duplicate commands, cancellation, saved-engine identity, error messages, bridge failures, and saved-audio locks. The process-group check uses simulated temperatures and sleeping workers; it does not heat the Mac with inference.
 
-Both fixed MLX checkpoints are downloaded and passed their file digest checks on this Mac. Each engine completed a real 669-word, two-section conversion and a resume check that reused the saved audio. Qwen used Ryan; Voxtral used neutral male. See [the measured comparison](reports/qwen-vs-kokoro.md) for the samples, model revisions, temperature records, and limits.
+Completed projects do not poll automatically. Active project checks stop when the window is inactive. Logs load on demand, and cover data is cached per project. `BridgeRequest` signposts mark command duration for Instruments. See [the app review](docs/app-review.md) and [verification history](docs/verification.md).
 
-The Qwen sample took 301.9 seconds; the matching Kokoro sample took 115.3 seconds. The estimated Qwen time for all of Emotional Design is 6 hours 32 minutes to 9 hours 39 minutes, compared with a Kokoro production estimate of 2 hours 19 minutes. These are estimates, not complete clean book runs. Voxtral's test included manual pauses and cooling changes after a temperature overshoot, so its elapsed time is not a controlled speed comparison.
+## Privacy and third-party code
 
-For a new installation, obtain `config.json` and `kokoro-v1_0.pth` from [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M). The required model SHA-256 is `496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4`. Install the `en_core_web_sm` spaCy model and cache the selected Kokoro voice before an offline run. Heart uses `voices/af_heart.pt` from the same model repository.
+Ebooks, extracted book projects, recordings, model weights, Python environments, and application logs are not included in this repository. Diagnostic reports remain in `~/Library/Logs/Audiobook Studio`, with bounded log rotation. They contain an error reference, operation, engine, recent action names, and error details; details can include local file paths. Check reports before sharing them.
 
-## Prepare and run a book
+This app expects a readable EPUB. It does not remove DRM.
 
-The source can be an EPUB ZIP file or an unpacked EPUB directory. Preparation reads the EPUB spine and creates section text and book metadata. It does not remove encryption. It does not describe images.
-
-```sh
-.venv/bin/python convert.py prepare '/path/Book.epub' \
-  --project '/path/audiobooks/Book' \
-  --model-dir '/path/kokoro-model' \
-  --voice af_heart --speed 0.95
-.venv/bin/python convert.py run '/path/audiobooks/Book'
-```
-
-Keep the run command open until it finishes. Ctrl+C stops the run. To resume, use the same run command. Do not start another conversion directly from a worker script. The main command holds a project lock to prevent duplicate work.
-
-The `status` command reads saved progress:
-
-```sh
-.venv/bin/python convert.py status '/path/audiobooks/Book'
-```
-
-`book.json` holds the title, author, voice, speed, model path, sensor path, and output name. Use a new project directory if the source book or voice changes. The internal `kokoro-heart-build` directory name is retained for compatibility with the first conversion; the selected voice comes from `book.json`.
-
-## Checks
-
-```sh
-python3 -m unittest discover -s tests
-python3 scripts/check_parallel_guard.py
-python3 -m py_compile convert.py scripts/*.py
-```
-
-The process test uses small sleeping processes. It checks that all test workers pause when the simulated temperature reaches the pause point, resume after cooling, and pause when readings fail. It does not heat the Mac.
-
-## First conversion
-
-The completed Emotional Design audiobook is in `/Users/ojasviyadav/Work/Audiobooks/Emotional Design`. It has 21 chapters and runs for about 8 hours 50 minutes. The final pipeline checked chapter markers, titles, duration, and full audio decoding. Its ebook, text, voices, model, and audio are outside Git.
-
-Open the completed M4B in Apple Books, or use File → Import. The M4B contains chapters and cover art when the EPUB provides a cover.
-
-## Third-party source
-
-The temperature reader includes code from [smctemp](https://github.com/narugit/smctemp). Its GPL license is in `vendor/smctemp/LICENSE`. Local changes make read errors explicit and return current readings as JSON. Inactive sensor values are omitted. The supervisor requires valid CPU and GPU sensor groups.
-
-Kokoro and the model have their own licenses. See their [official repository](https://github.com/hexgrad/kokoro).
-
-## App appearance
-
-Version 1.2 uses a teal book-and-sound icon, matching control colours, book-cover details, and clear progress and temperature cards. Advanced cooling controls remain available in expandable sections. The GPU card shows its own live target.
-
-The icon source is `scripts/generate-icon.swift`. Run it with `swift scripts/generate-icon.swift` to regenerate the three colour variants and the selected teal PNG and ICNS files in `App/Resources`. The app build copies both selected files into the signed bundle.
+The temperature reader includes [smctemp](https://github.com/narugit/smctemp), with its [GPL-2.0 license](vendor/smctemp/LICENSE). Model and dependency licenses apply separately. In particular, the selected Voxtral checkpoint has a noncommercial license. Model links and licenses are listed in [Engine notes](docs/engines.md).
