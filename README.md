@@ -46,6 +46,24 @@ Choose a book, select a preset voice, and start. Audiobook Studio saves finished
 
 Qwen and Voxtral use pitch-preserving audio processing for speed changes. A value of **1.25×** makes the saved audio faster; it is separate from a player's playback-speed control.
 
+### Choose for quality or processing time
+
+Use **Compare models…** beside the engine selector. The app shows three model cards, the detected GPU and memory, model file sizes, and the limits of the timing evidence. Select a card to change an unsaved recording. Saved recordings keep their original model.
+
+| Model | Suggested quality order | Estimated processing needs | Main reason to choose it |
+| --- | --- | --- | --- |
+| Qwen | 1 | Higher | Expressive narration and style instructions; the default |
+| Voxtral | 2, provisional | Higher | More preset voices |
+| Kokoro | 3, provisional | Lowest | Smaller model and faster local processing than Qwen |
+
+The quality order is a listening suggestion, not a measured score. Qwen is the current listening preference; Voxtral and Kokoro have not had a blind quality comparison. The processing groups are estimates, not measurements of power use. The speed order between Qwen and Voxtral is not established.
+
+![Model comparison with quality choices, processing needs, and device guidance](docs/images/model-guide.png)
+
+The local 669-word sample took about **302 seconds with Qwen** and **115 seconds with Kokoro**, with different cooling settings and audio speeds. Voxtral's test had interruptions and changes to cooling controls, so it cannot establish a fair speed rank. See the [measurement report](reports/qwen-vs-kokoro.md).
+
+All three models completed samples on an M4 Pro with 48 GB. Other devices show a prompt to test a sample. File sizes are about 2.7 GB for Qwen, 2.5 GB for Voxtral, and 0.33 GB for Kokoro's main weights. These are not memory requirements. Each of the two fixed GPU workers loads a model; buffers, runtimes, and other apps need more memory. Smaller downloads do not necessarily mean faster generation. See [model sources and selection guidance](docs/engines.md#model-selection-guide).
+
 The model IDs and adapter details are in [Engine notes](docs/engines.md). Model weights are downloaded separately from [Hugging Face](https://huggingface.co/mlx-community).
 
 ### Why does an old project still show Kokoro?

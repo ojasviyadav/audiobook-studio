@@ -79,6 +79,42 @@ final class StudioModelTests: XCTestCase {
         let requests = await bridge.requests
         XCTAssertEqual(requests.map(\.action), ["load"], "Making a draft must not generate or overwrite audio")
     }
+    func testModelGuideChoicesUpdateDraftWithoutStartingWork() async {
+        let bridge = ControlledBridge(blocked: [], initial: BridgeResponse(ok: true))
+        let model = model(bridge)
+        model.newBook()
+        model.settings.source = "/tmp/test.epub"
+        for _ in 0..<2 {
+            model.selectEngine("voxtral")
+            XCTAssertEqual(model.settings.voice, "neutral_male")
+            XCTAssertEqual(model.settings.workSeconds, 3)
+            XCTAssertEqual(model.settings.restSeconds, 10)
+            XCTAssertTrue(model.project.hasSuffix("test — voxtral"))
+            model.selectEngine("kokoro")
+            XCTAssertEqual(model.settings.voice, "af_heart")
+            XCTAssertEqual(model.settings.speed, 0.95)
+            model.selectEngine("qwen")
+            XCTAssertEqual(model.settings.voice, "Ryan")
+            XCTAssertEqual(model.settings.speed, 1.25)
+            XCTAssertEqual(model.settings.ceilingC, 90)
+            XCTAssertEqual(model.settings.gpuCeilingC, 93)
+        }
+        let requests = await bridge.requests
+        XCTAssertTrue(requests.isEmpty, "Model selection must not start a download or conversion")
+    }
+    func testModelGuideCannotChangeSavedRecording() async {
+        let bridge = ControlledBridge(blocked: [], initial: savedBook())
+        let model = model(bridge)
+        await model.loadProject()
+        let project = model.project
+        for option in NarratorOption.all { model.selectEngine(option.id) }
+        XCTAssertEqual(model.settings.backend, "kokoro")
+        XCTAssertEqual(model.settings.voice, "af_heart")
+        XCTAssertEqual(model.settings.speed, 0.95)
+        XCTAssertEqual(model.project, project)
+        let requests = await bridge.requests
+        XCTAssertEqual(requests.map(\.action), ["load"])
+    }
     func testOldStatusCannotReplaceNewProjectAndChecksDoNotOverlap() async {
         let bridge = ControlledBridge(blocked: ["status"], initial: savedBook())
         let model = model(bridge)
@@ -172,6 +208,26 @@ final class StudioModelTests: XCTestCase {
 
 import SwiftUI
 extension StudioModelTests {
+    func testRenderModelGuide() async throws {
+        guard let folder = ProcessInfo.processInfo.environment["STUDIO_GUIDE_LAYOUT_DIR"] else { return }
+        for locked in [false, true] {
+            for dark in [false, true] {
+                let bridge = ControlledBridge(blocked: [], initial: savedBook())
+                let model = model(bridge)
+                if locked { await model.loadProject() } else { model.newBook() }
+                let view = NSHostingView(rootView: ModelGuideView(model: model)
+                    .tint(StudioPalette.accent).environment(\.colorScheme, dark ? .dark : .light))
+                view.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+                view.frame = NSRect(x: 0, y: 0, width: 900, height: 780)
+                view.layoutSubtreeIfNeeded()
+                let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+                view.cacheDisplay(in: view.bounds, to: bitmap)
+                let name = "model-guide-\(locked ? "locked" : "draft")-\(dark ? "dark" : "light").png"
+                try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
+                    .write(to: URL(fileURLWithPath: folder).appendingPathComponent(name))
+            }
+        }
+    }
     func testRenderPublicAppLayout() throws {
         guard let output = ProcessInfo.processInfo.environment["STUDIO_LAYOUT_PATH"] else { return }
         let bridge = ControlledBridge(blocked: [], initial: BridgeResponse(ok: true))

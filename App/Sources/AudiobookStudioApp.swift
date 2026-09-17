@@ -36,6 +36,7 @@ struct AudiobookStudioApp: App {
 struct StudioView: View {
     @ObservedObject var model: StudioModel
     @Environment(\.scenePhase) private var scenePhase
+    @State private var showModelGuide = false
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -77,6 +78,7 @@ struct StudioView: View {
             if scenePhase == .active && model.shouldPoll && !model.busy { await model.poll() }
         }
         .sheet(isPresented: $model.showSetup) { SetupView(model: model) }
+        .sheet(isPresented: $showModelGuide) { ModelGuideView(model: model) }
         .sheet(isPresented: $model.showLogs) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack { Text("Conversion log").font(.title2.bold()); Spacer(); Button("Done") { model.showLogs = false } }
@@ -131,6 +133,15 @@ struct StudioView: View {
                     Text("Voxtral 4B · 4-bit").tag("voxtral")
                     Text("Kokoro 82M · v1.0").tag("kokoro")
                 }.disabled(model.audioLocked)
+                HStack(alignment: .top) {
+                    if let option = NarratorOption.all.first(where: { $0.id == model.settings.backend }) {
+                        Text("Quality choice \(option.qualityOrder) · \(option.compute)")
+                            .font(.caption).foregroundStyle(.secondary)
+                            .help("Suggested listening order, not a measured quality score. Compare models for the evidence and device guidance.")
+                    }
+                    Spacer()
+                    Button("Compare models…") { showModelGuide = true }.buttonStyle(.borderless)
+                }
                 HStack {
                     Picker("Voice", selection: $model.settings.voice) {
                         ForEach(model.voices, id: \.self) { Text(model.voiceLabel($0)).tag($0) }

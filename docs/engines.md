@@ -14,6 +14,20 @@ Sources: [Qwen checkpoint](https://huggingface.co/mlx-community/Qwen3-TTS-12Hz-1
 
 ## Processing
 
+### Model selection guide
+
+The app's **Compare models…** panel uses these rules:
+
+- **Quality order:** Qwen, then Voxtral, then Kokoro. This is a suggested listening order. Qwen is the user's preferred narrator; the positions of Voxtral and Kokoro are provisional. There is no measured quality score or blind comparison of these three local checkpoints.
+- **Processing groups:** Kokoro has the lowest estimated load. Qwen and Voxtral are in the higher group. Their relative speed and power use have not been established. Model parameter count does not provide a fair speed rank across different model architectures.
+- **Local evidence:** Qwen took 301.9 seconds and Kokoro took 115.3 seconds for the same 669 source words. Cooling settings, audio speeds, and some setup overhead differed. The Voxtral test had interruptions and changed cooling settings. Its 904.2-second elapsed time is not shown as a speed ranking. Full details are in the [timing report](../reports/qwen-vs-kokoro.md).
+- **Device guidance:** The panel reads the Metal device name and installed memory locally. It identifies M4 Pro / 48 GB as the tested configuration. It does not claim measured speed on other devices. It gives sample-first guidance and does not change the fixed two-worker setup.
+- **Model files:** Approximately 2.7 GB for Qwen, 2.5 GB for Voxtral, and 0.33 GB for Kokoro's main weights. These values exclude extra runtime memory and are not minimum RAM specifications. Each worker loads a model. No claim is made that two workers will double speed or use exactly twice the model file size in memory.
+
+Model size and features were checked against the [Qwen MLX checkpoint](https://huggingface.co/mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-6bit), [Qwen CustomVoice documentation](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice), [Voxtral MLX checkpoint](https://huggingface.co/mlx-community/Voxtral-4B-TTS-2603-mlx-4bit), and [Kokoro model card](https://huggingface.co/hexgrad/Kokoro-82M) on 17 September 2026. The local Kokoro weights occupy 327,212,226 bytes. Published model throughput is kept separate from local measurements.
+
+### Audio pipeline
+
 EPUB extraction is shared by all engines. New MLX projects use a default 1,000-character chunk limit. The app permits 500–1,500 characters. This is a maximum, not a minimum: a final paragraph or section can be shorter. Saved chunks use FLAC at 24 kHz. FFmpeg creates chapter audio and the final M4B.
 
 Two independent workers use the GPU. This count is fixed. They work on separate sections. Each worker loads its own model. The GPU runtime chooses how to use the GPU cores. The new engines have not inherited a claim that two workers are faster than one: the earlier measured comparison applies to Kokoro only.

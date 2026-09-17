@@ -1,5 +1,23 @@
 # App review — 17 September 2026
 
+## Version 1.4 — model comparison
+
+Build 7 adds **Compare models…** beside the engine selector. Three cards show the suggested quality order, estimated processing needs, model file sizes, and selection buttons. The panel reads the local Metal device and installed memory once. It does not start a model, download files, or change the fixed GPU configuration.
+
+The quality order is explicitly a listening suggestion. Qwen remains the default. The relative positions of Voxtral and Kokoro are provisional. Qwen and Voxtral share a higher processing group because no fair local comparison establishes their relative speed or power use. The timing disclosure distinguishes measured local samples from published model claims.
+
+Verification completed:
+
+- All 13 Swift tests passed, including repeated draft-model changes and protection of saved recordings. Selection causes no bridge request, download, or conversion.
+- The comparison was rendered from the actual SwiftUI view and visually inspected in light and dark appearances, for draft and saved-recording states. The first render exposed a transparent background problem; an explicit system background fixed it. All three model cards, selection state, evidence disclosure, and guidance fit in the final view.
+- The main screen was rendered and inspected with the comparison entry beside the engine selector.
+- The release app built successfully. Strict code-signature verification passed.
+- No narration process was active before the old app was closed normally. The new app was launched after the build. Live UI control returned “Sky Computer Use native pipe closed before response,” so the running-window click path was not verified. Rendered views and model tests do not replace that check.
+
+The reviewed comparison image is [model-guide.png](images/model-guide.png). No narration performance claim was added from these UI checks.
+
+## Version 1.3 — saved recordings and reliability
+
 Version 1.3, build 6, explains the difference between saved narration and the default for a new book. A completed Kokoro project still reports Kokoro. The new-version button selects Qwen, Ryan, and 1.25× in a separate draft. It does not start conversion or change existing audio.
 
 ## Task handling
