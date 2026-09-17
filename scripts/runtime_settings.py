@@ -19,6 +19,8 @@ AUDIO_KEYS = ('voice', 'speed', 'bitrate', 'paragraph_gap', 'chapter_gap',
 
 def validate(config):
     c = DEFAULTS | config
+    if c['backend'] == 'qwen':
+        c['speed'] = config.get('speed',1.25)
     if c['backend'] != 'kokoro':
         c['pause_c'] = config.get('pause_c',82.0)
         c['resume_c'] = config.get('resume_c',78.0)

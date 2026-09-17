@@ -30,6 +30,7 @@ final class BridgeTests: XCTestCase {
         XCTAssertEqual(response.config?.gpuPauseC, 89)
         XCTAssertEqual(response.config?.gpuResumeC, 85)
         XCTAssertEqual(response.config?.title, "Bridge test")
+        XCTAssertEqual(response.config?.speed, 1.25)
         XCTAssertEqual(response.config?.paragraphGap, 0.2)
         XCTAssertEqual(response.progress?.saved, 0)
         XCTAssertEqual(response.active, false)

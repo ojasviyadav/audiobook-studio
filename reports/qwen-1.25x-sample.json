@@ -1,0 +1,9 @@
+{
+  "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-6bit",
+  "voice": "Ryan",
+  "speed": 1.25,
+  "duration_seconds": 30.0,
+  "source": "/Users/ojasviyadav/Work/ebooks-to-audiobook-conversion/projects/engine-comparison/qwen/kokoro-heart-build/01-extract/0001.flac",
+  "output": "/Users/ojasviyadav/Work/ebooks-to-audiobook-conversion/projects/previews/qwen-ryan-1.25x-30s.m4a",
+  "method": "Existing 1.0x Ryan narration, with the same pitch-preserving atempo=1.25 speed change used by the app. Trimmed to 30 seconds, with a 150 ms fade at the end. No new model inference."
+}

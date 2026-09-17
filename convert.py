@@ -163,7 +163,7 @@ def main():
     args=parser.parse_args()
     if args.command == 'prepare':
         args.voice = args.voice or {'kokoro':'af_heart','qwen':'Ryan','voxtral':'neutral_male'}[args.backend]
-        args.speed = args.speed if args.speed is not None else (0.95 if args.backend=='kokoro' else 1.0)
+        args.speed = args.speed if args.speed is not None else {'kokoro':0.95,'qwen':1.25,'voxtral':1.0}[args.backend]
         if not 0.5 <= args.speed <= 2: parser.error('speed must be between 0.5 and 2')
         prepare(args); return
     project=args.project.resolve(); config=json.loads((project/'book.json').read_text())

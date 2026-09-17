@@ -8,7 +8,7 @@ The app uses preset voices only. It does not use TADA or a voice-cloning model.
 | Voxtral 4B TTS, 4-bit | `mlx-community/Voxtral-4B-TTS-2603-mlx-4bit` | 20 presets | CC-BY-NC-4.0 |
 | Kokoro 82M v1.0 | Existing local `kokoro-v1_0.pth` | Heart, Bella, Michael | See the Kokoro model license |
 
-Qwen accepts style instructions. The default is calm, clear audiobook narration. Its English language setting is fixed. Voxtral uses the language of its selected voice. English voices are casual male, casual female, cheerful female, neutral male, and neutral female. Other presets have language prefixes: `fr`, `es`, `de`, `it`, `pt`, `nl`, `ar`, and `hi`.
+Qwen defaults to Ryan at 1.25× speed for new books. The earlier timing sample used 1.0×. Qwen accepts style instructions. The default is calm, clear audiobook narration. Its English language setting is fixed. Voxtral uses the language of its selected voice. English voices are casual male, casual female, cheerful female, neutral male, and neutral female. Other presets have language prefixes: `fr`, `es`, `de`, `it`, `pt`, `nl`, `ar`, and `hi`.
 
 Sources: [Qwen checkpoint](https://huggingface.co/mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-6bit), [Qwen API](https://github.com/Blaizzy/mlx-audio/blob/main/docs/models/tts/qwen3-tts.md), [Voxtral checkpoint and voices](https://huggingface.co/mlx-community/Voxtral-4B-TTS-2603-mlx-4bit).
 

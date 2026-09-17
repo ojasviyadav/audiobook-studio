@@ -13,7 +13,7 @@ struct BookSettings: Codable, Sendable {
     var cover: String? = nil
     var backend = "qwen"
     var voice = "Ryan"
-    var speed = 1.0
+    var speed = 1.25
     var instruct = "Natural audiobook narration. Calm, clear, steady pacing."
     var chunkChars = 1000
     var temperature = 0.8
@@ -152,7 +152,7 @@ final class StudioModel: ObservableObject {
         player?.stop(); previewing = false
         settings.backend = engine
         settings.voice = engine == "qwen" ? "Ryan" : (engine == "voxtral" ? "neutral_male" : "af_heart")
-        settings.speed = engine == "kokoro" ? 0.95 : 1
+        settings.speed = engine == "qwen" ? 1.25 : (engine == "kokoro" ? 0.95 : 1)
         settings.pauseC = engine == "kokoro" ? 86 : 82
         settings.resumeC = engine == "kokoro" ? 82 : 78
         settings.gpuPauseC = 89

@@ -6,7 +6,7 @@ This repository was made for Emotional Design on a MacBook Pro with an M4 Pro, 1
 
 ## Swift app
 
-Open **Audiobook Studio.app** in this folder. New books default to **Qwen3-TTS 1.7B CustomVoice 6-bit**, **Ryan**, and **1× speed**. Existing projects keep their saved engine. Codex does not need to be open for conversion.
+Open **Audiobook Studio.app** in this folder. New books default to **Qwen3-TTS 1.7B CustomVoice 6-bit**, **Ryan**, and **1.25× speed**. Existing projects keep their saved engine and speed. Codex does not need to be open for conversion.
 
 1. Select **New Book**, then select an EPUB file or an unpacked EPUB folder.
 2. Select the output folder. The app makes a project folder with the EPUB name. Use **Open Project** to resume an existing project.
