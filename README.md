@@ -191,7 +191,7 @@ Completed projects do not poll automatically. Active project checks stop when th
 
 Audiobook Studio is free and runs on your Mac. I build it independently. If it narrates a book for you, your support pays for more time to build.
 
-[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-ED7647?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/ojasviyadav) [![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-171717?style=for-the-badge&logo=buymeacoffee&logoColor=FFDD00)](https://buymeacoffee.com/ojasviyadav)
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-A8441F?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/ojasviyadav) [![Buy me a coffee](https://img.shields.io/badge/Buy_me_a_coffee-171717?style=for-the-badge&logo=buymeacoffee&logoColor=FFDD00)](https://buymeacoffee.com/ojasviyadav)
 
 ## Privacy and third-party code
 
